@@ -4,11 +4,11 @@ Refactoring the Future
 > A description of our app (when we come up with it)
 
 ## Table of Contents
-- [Team](#-team)
-- [Project Ideas](#-project-ideas)
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Features](#-features)
+- [Team](#team)
+- [Project Ideas](#project-ideas)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
 
 ## Team
 - [Julian Aguilar-Tomas](team/JulianResume.pdf)
@@ -23,7 +23,7 @@ Refactoring the Future
 
 ## Project Ideas
 
-Project ideas can be found in [team/ProjectIdeas](team/projectideas.pdf).
+Project ideas can be found in [team/ProjectIdeas](team/ProjectIdeas.pdf).
 
 ## Installation
 
