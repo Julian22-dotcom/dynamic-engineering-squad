@@ -10,10 +10,10 @@ Refactoring the Future
 - [Features](#-features)
 
 ## Team
--[Julian Aguilar-Tomas](team/JulianResume.pdf)
--[Phillip Alter](team/PAlterResume.pdf)
--[Erin Anderson](team/EAnderson.pdf)
--[Sunair Iqbal](team/SIqbal.pdf)
+- [Julian Aguilar-Tomas](team/JulianResume.pdf)
+- [Phillip Alter](team/PAlterResume.pdf)
+- [Erin Anderson](team/EAndersonResume.pdf)
+- [Sunair Iqbal](team/SIqbalResume.pdf)
 
 ## Installation
 
