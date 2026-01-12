@@ -5,6 +5,7 @@ Refactoring the Future
 
 ## Table of Contents
 - [Team](#-team)
+- [Project Ideas](#-project-ideas)
 - [Installation](#-installation)
 - [Usage](#-usage)
 - [Features](#-features)
@@ -19,6 +20,10 @@ Refactoring the Future
 - [Logo](doc/DESlogo.png)
 - [Letterhead](doc/DES_Letterhead_Template.pdf)
 - [Business Card](doc/business_card.png)
+
+## Project Ideas
+
+Project ideas can be found in [team/ProjectIdeas](team/projectideas.pdf).
 
 ## Installation
 
