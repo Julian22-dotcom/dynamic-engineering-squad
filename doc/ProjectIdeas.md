@@ -69,3 +69,24 @@ An external AI—using **Google’s Gemini API** or **OpenAI’s API**—would a
 
 **Optional Add-ons**
 - Import existing projects or tasks using the **Jira API**
+
+
+## Infrastructure Reporting App
+
+### Problem
+Current infrastructure reporting tools are bureaucratic and unengagiung, acting as intake forms rather than active community tools.
+
+### Solution
+In this application, users would:
+- Create an account
+- Document local infrastructure issues 
+- Engage in a gamified system by ferifying/"upvoting" existing reports to earn points
+- Vote on custom anmes for high-visibility issues (E.g. "The Lancaster Black Hole" for a pothole on Lancaster Dr.) to create a narrative and social accountability
+
+An external AI - using **Google's Cloud Vision API** or similar - would assist by:
+- Automatically identifying material and possible severity of the damage
+- Calculating an estimated "bounty" (repair cost) based on the visual data to display on a public dashboard
+
+### Optional Add-ons
+- Interative maps to drop and view pins using the Google Maps API
+- Automated email notifications using an email API when specific issues reach a high "upvote" threshold
