@@ -20,12 +20,16 @@
 1. Feature \- Leaderboard of the worst infrastructure damage pics  
 2. Feature \- Leaderboard of highest “point” carriers  
 3. Feature \- Sharing to social media  
-4. Feature \- Naming system for Infrastructure issues  
-5. Feature \- “Upvote” system for existing issues  
-6. Feature \- Celebration when infrastructure issue is resolved  
-7. Feature \- Connect road cams to view roads/potholes in real time  
-8. Feature \- GeoGuess for potholes/damage. People upload pics and other people guess where it came from.  
-9. Feature \- Taking bets on how long it will take the city to fix it using virtual points gathered from using the app \- similar to channel points on Twitch.
+4. Feature \- Naming system
+5. Feature \- “Upvote”/verification system for existing issues  
+6. Feature \- Celebration when infrastructure issue is resolved
+7. Feature \- Connect road cams to view roads/potholes in real time (???)
+8. Feature \- User Accounts with Authentication
+9. Feature \- User roles
+10. Feature \- Feed of latest finds
+11. Feature \- Flagging system to flag inappropriate posts
+12. Feature \- Maps screen to show infrastructure issues near user
+13. Feature \- Submitting an infrastructure issue
 
 ## What can a user do with it?
 

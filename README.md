@@ -33,6 +33,7 @@ Refactoring the Future
      - [Visualization](./doc/infrastructure_inception/infrastructure_mind_map.svg)
 - [Needs and Features](./doc/infrastructure_inception/NeedsAndFeatures.md)
 - [Architecture Map](./doc/infrastructure_inception/architecture.svg)
+- [Stakeholders and Users](./doc/infrastructure_inception/stakeholders.md)
 
 ## Installation
 
