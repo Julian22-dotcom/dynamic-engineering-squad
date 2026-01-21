@@ -15,7 +15,7 @@
 11. Need \- User Roles (user/moderator/admin)
 
 
-## List of Features (with priority)
+## List of Features (with priority High/Medium/Low)
 
 ### Core Reporting & Discovery
 1. Submitting an infrastructure issue (photo, location, description) — High  

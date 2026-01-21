@@ -35,6 +35,12 @@ Refactoring the Future
 - [Architecture Map](./doc/infrastructure_inception/architecture.svg)
 - [Stakeholders and Users](./doc/infrastructure_inception/stakeholders.md)
 
+### Feature-Specific Requirements
+#### Submitting a Report
+- [Feature Requirements](./doc/infrastructure_inception/features_requirement/requirements_submitting.md)
+- [ER Diagram](./doc/infrastructure_inception/features_requirement/submitting_erd.svg)
+- [UI Wireframe](./doc/infrastructure_inception/features_requirement/submitting_ui.pdf)
+
 ## Installation
 
 TBD
