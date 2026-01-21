@@ -41,3 +41,13 @@
 - **Role**: Regular User (Uses the app when issues directly impact his business or customers)
 - **Profile Picture**:
      - ![An image of Jimothy Slimm](./images/jimothy_slimm.png)
+
+### User #3: <name>
+- **Age**: 42 
+- **Occupation**: Elementary School Teacher
+- **Location**: Salem, Oregon
+- **Tech Proficiency**: Moderate — comfortable using smartphones and common apps, but not highly technical
+- **Background Information**: María has lived in Salem for over 15 years and commutes daily to work. She often notices damaged sidewalks, crosswalks, and potholes near her school that make it unsafe for children and parents. She has tried reporting issues in the past through city websites but found the process confusing and time-consuming. María values community involvement and wants an easy way to report issues and track whether they are being addressed, especially those affecting public safety.
+- **Role**: Reports and verifies infrastructure issues affecting neighborhood safety.
+- **Profile Picture**:
+     - ![An image of <name>](./images/Maria_Gonzales.jpg)
