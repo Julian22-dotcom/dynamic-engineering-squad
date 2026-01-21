@@ -32,6 +32,16 @@
 - **Profile Picture**:
      - ![An image of Kyle Glass](./images/kyle_glass.jpg)
 
+### User #2: Jimothy Slimm
+- **Age**: 45
+- **Occupation**: Auto Repair Shop Owner
+- **Location**: Independence, Oregon
+- **Tech Proficiency**: Medium (Uses his phone primarily for work—communicating with customers and sourcing vehicle parts.)
+- **Background Information**: Jimothy owns a tire and suspension repair shop on a busy arterial road in Independence. He regularly sees customers come in with damage caused by the same uneven pavement, deteriorating road surfaces, and failing infrastructure near his shop. While these repairs bring him business, he knows they place a financial burden on residents and erode trust in the city’s ability to maintain its roads. Jim uses the app to submit reports tied to vehicle damage risk and actively upvotes high-cost hazards. He values the app’s ability to calculate estimated repair costs and frame infrastructure neglect in financial terms that city officials are more likely to take seriously.
+- **Role**: Regular User (Uses the app when issues directly impact his business or customers)
+- **Profile Picture**:
+     - ![An image of Jimothy Slimm](./images/jimothy_slimm.png)
+
 ### User #3: <name>
 - **Age**: 42 
 - **Occupation**: Elementary School Teacher
