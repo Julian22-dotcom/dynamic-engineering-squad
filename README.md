@@ -28,6 +28,7 @@ Refactoring the Future
 
 ## Infrastructure Project Idea
 
+- [Timeline](./doc/timeline-and-release.md)
 - [Vision Statement](./doc/infrastructure_inception/InfrastructureVisionStatement.md)
 - [Mind Map](./doc/infrastructure_inception/InfrastructureAppMindMap.md)
      - [Visualization](./doc/infrastructure_inception/infrastructure_mind_map.svg)
