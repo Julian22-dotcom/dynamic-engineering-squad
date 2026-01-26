@@ -15,7 +15,7 @@
 
 ## Users
 
-### User #1: Kyle Glass
+### Kyle Glass
 - **Age**: 22
 - **Occupation**: Delivery Driver
 - **Location**: Salem, Oregon
@@ -25,7 +25,7 @@
 - **Profile Picture**:
      - ![An image of Kyle Glass](./images/kyle_glass.jpg)
 
-### User #2: Jimothy Slimm
+### Jimothy Slimm
 - **Age**: 45
 - **Occupation**: Auto Repair Shop Owner
 - **Location**: Independence, Oregon
@@ -35,7 +35,7 @@
 - **Profile Picture**:
      - ![An image of Jimothy Slimm](./images/jimothy_slimm.png)
 
-### User #3: Maria Gonzales
+### Maria Gonzales
 - **Age**: 42 
 - **Occupation**: Elementary School Teacher
 - **Location**: Salem, Oregon
@@ -45,7 +45,7 @@
 - **Profile Picture**:
      - ![An image of <name>](./images/Maria_Gonzales.jpg)
 
-### User #2: Denise Green
+### Denise Green
 - **Age**: 39
 - **Occupation**: City of Salem Infrastructure Employee
 - **Location**: Salem, OR
