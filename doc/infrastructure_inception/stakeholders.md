@@ -5,14 +5,7 @@
 
 ## Advisor
 - Chris Brooks
-
-## Sponsors
-- Angel en Vestér
-    - Angel is a stakeholder because he finds the app interesting enough to invest into, and sees potential growth in the app. He is personally familiar with infrastructure issues on his drive home, dealing with potholes and broken lights.
-
-## Outside Experts
-- Cesar Cival
-     - Cesar is a stakeholder because he acts as the subject matter expert on city infrastructure and planning. He is a civil engineer who works directly with the muncipalities and knows their processes.
+- Dr. Becka Morgan
 
 ## Developers
 - Julian Aguilar-Tomas
