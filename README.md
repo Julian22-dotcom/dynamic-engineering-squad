@@ -41,6 +41,7 @@ Refactoring the Future
 - [Feature Requirements](./doc/infrastructure_inception/features_requirement/requirements_submitting.md)
 - [ER Diagram](./doc/infrastructure_inception/features_requirement/submitting_erd.svg)
 - [UI Wireframe](./doc/infrastructure_inception/features_requirement/submitting_ui.pdf)
+- [Use Case Diagram](./doc/infrastructure_inception/features_requirement/use_case_submitting.svg)
 
 ## Installation
 

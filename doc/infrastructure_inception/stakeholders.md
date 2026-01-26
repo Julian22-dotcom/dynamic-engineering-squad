@@ -51,3 +51,13 @@
 - **Role**: Reports and verifies infrastructure issues affecting neighborhood safety.
 - **Profile Picture**:
      - ![An image of <name>](./images/Maria_Gonzales.jpg)
+
+### User #2: Denise Green
+- **Age**: 39
+- **Occupation**: City of Salem Infrastructure Employee
+- **Location**: Salem, OR
+- **Tech Proficiency**: Moderate–High (Uses databases, GIS dashboards, ticketing systems, and reporting tools daily)
+**Background Information**: Denise works for the city’s Public Works Department, where she helps manage road maintenance requests, service tickets, and infrastructure planning. Every week, she reviews dozens of citizen complaints about potholes, damaged signage, and unsafe road conditions. Currently, much of this information comes in through disconnected channels—phone calls, emails, and paper reports—making it difficult to prioritize urgent issues or identify recurring problem areas. Denise wants a centralized, data-driven system that allows her to view user-submitted reports in real time, verify conditions, update road status, and track whether maintenance crews have resolved the problem. For her, this app is a tool to improve transparency, efficiency, and public trust.
+- **Role**: Administrative / Operational User (Uses app daily to manage and update city infrastructure data)
+- **Profile Picture**:
+     - ![An image of <Denise>](./images/Denise.png)
