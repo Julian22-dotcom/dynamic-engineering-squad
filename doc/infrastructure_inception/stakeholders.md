@@ -5,14 +5,7 @@
 
 ## Advisor
 - Chris Brooks
-
-## Sponsors
-- Angel en Vestér
-    - Angel is a stakeholder because he finds the app interesting enough to invest into, and sees potential growth in the app. He is personally familiar with infrastructure issues on his drive home, dealing with potholes and broken lights.
-
-## Outside Experts
-- Cesar Cival
-     - Cesar is a stakeholder because he acts as the subject matter expert on city infrastructure and planning. He is a civil engineer who works directly with the muncipalities and knows their processes.
+- Dr. Becka Morgan
 
 ## Developers
 - Julian Aguilar-Tomas
@@ -22,7 +15,7 @@
 
 ## Users
 
-### User #1: Kyle Glass
+### Kyle Glass
 - **Age**: 22
 - **Occupation**: Delivery Driver
 - **Location**: Salem, Oregon
@@ -32,7 +25,7 @@
 - **Profile Picture**:
      - ![An image of Kyle Glass](./images/kyle_glass.jpg)
 
-### User #2: Jimothy Slimm
+### Jimothy Slimm
 - **Age**: 45
 - **Occupation**: Auto Repair Shop Owner
 - **Location**: Independence, Oregon
@@ -42,7 +35,7 @@
 - **Profile Picture**:
      - ![An image of Jimothy Slimm](./images/jimothy_slimm.png)
 
-### User #3: Maria Gonzales
+### Maria Gonzales
 - **Age**: 42 
 - **Occupation**: Elementary School Teacher
 - **Location**: Salem, Oregon
@@ -52,7 +45,7 @@
 - **Profile Picture**:
      - ![An image of <name>](./images/Maria_Gonzales.jpg)
 
-### User #2: Denise Green
+### Denise Green
 - **Age**: 39
 - **Occupation**: City of Salem Infrastructure Employee
 - **Location**: Salem, OR
