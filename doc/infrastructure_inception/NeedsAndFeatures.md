@@ -87,3 +87,16 @@
 5. The system must prevent duplicate infrastructure issue reports for the same location. 
 6. The system must be able to flag/report/ban users for inappropriate names or pictures.
 
+### Potential User Stories
+
+- User Registration (4 pts): As a new user, I would like to create a new account with a username, email, and password so I can start submitting reports and earning points.
+- User Login (2 pts): As a registered user, I would like to log in using my credentials so I can access my account and private features.
+- Admin: Ban/Suspend User (4 pts): As an Administrator, I would like to ban a user who abuses the system so I can maintain a safe and clean community.
+- Admin: Manage User Roles (4 pts): As an Administrator, I would like to promote a standard user to a "Moderator" so I can share the workload of verifying infrastructure reports.
+- Route Protection (2 pts): As the Product Owner, I would like to block access to specific pages for non-logged-in users so I can prevent spam and unauthorized submissions.
+- User Dashboard (2 pts): As a competitive user, I would like to view my personal dashboard so I can see my total contribution points and reputation score.
+- Edit User Profile (2 pts): As a user, I would like to update my email address or bio so I can keep my contact info current and express my identity.
+- Upload Profile Picture (2 pts): As a user, I would like to upload a custom avatar image so I can be recognized on the leaderboard.
+- Secure Logout (1 pt): As a user, I would like to log out of the application so I can keep my account safe when I leave a shared computer.
+- View Public Profile (1 pt): As a user, I would like to click on another user's name in the feed so I can see their public stats and avatar.
+
