@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureApp", "InfrastructureApp.csproj", "{B01663FA-A780-4B4F-B21F-1C4117F86557}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureApp_Tests", "..\InfrastructureApp_Tests\InfrastructureApp_Tests.csproj", "{EB12F8ED-FF6D-406E-B55A-8D6FB16795D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B01663FA-A780-4B4F-B21F-1C4117F86557}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B01663FA-A780-4B4F-B21F-1C4117F86557}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B01663FA-A780-4B4F-B21F-1C4117F86557}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B01663FA-A780-4B4F-B21F-1C4117F86557}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB12F8ED-FF6D-406E-B55A-8D6FB16795D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB12F8ED-FF6D-406E-B55A-8D6FB16795D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB12F8ED-FF6D-406E-B55A-8D6FB16795D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB12F8ED-FF6D-406E-B55A-8D6FB16795D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

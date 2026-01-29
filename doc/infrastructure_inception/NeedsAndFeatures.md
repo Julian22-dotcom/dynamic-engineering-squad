@@ -31,8 +31,18 @@
 
 ### User Accounts & Roles
 9. User accounts with authentication — High  
-10. User roles (e.g., reporter, moderator, administrator) — High  
-11. User dashboard showing activity and contributions — Low  
+    - User Registration
+    - User Login
+    - Logging out
+    - Forgotten password
+10. User roles (e.g., reporter, moderator, administrator) — High 
+    - User Roles
+    - Admin banning users
+    - Admin managing user roles
+11. User dashboard showing activity and contributions — Low 
+    - User dashboard creation 
+    - Edit user profile
+    - Upload profile picture
 
 ### Gamification & Social
 12. Leaderboard of users with highest contribution points — Medium  
