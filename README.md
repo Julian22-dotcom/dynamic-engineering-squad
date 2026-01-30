@@ -33,10 +33,5 @@ This project is a gamified ASP.NET infrastructure reporting application defined 
 - [Needs and Features](./doc/infrastructure_inception/NeedsAndFeatures.md)
 - [Architecture Map](./doc/infrastructure_inception/architecture.svg)
 - [Stakeholders and Users](./doc/infrastructure_inception/stakeholders.md)
-
-### Feature-Specific Requirements
-#### Submitting a Report
-- [Feature Requirements](./doc/infrastructure_inception/features_requirement/requirements_submitting.md)
-- [ER Diagram](./doc/infrastructure_inception/features_requirement/submitting_erd.svg)
-- [UI Wireframe](./doc/infrastructure_inception/features_requirement/submitting_ui.pdf)
-- [Use Case Diagram](./doc/infrastructure_inception/features_requirement/use_case_submitting.svg)
+- [Database Schema (Working Copy)](./doc/infrastructure_inception/full_erd_infrastructure.md)
+- [Entity Relationship Diagram for full application (Working Copy)](./doc/infrastructure_inception/full_erd_infrastructure.svg)
