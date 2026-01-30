@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+.vs
 
 ## A streamlined .gitignore for modern .NET projects
 ## including temporary files, build results, and
