@@ -2,7 +2,9 @@
 # Dynamic Engineering Squad
 Refactoring the Future
 
-Our application is a gamified platform for reporting infrastructure issues. When users encounter a problem, they can take a photo, upload it to the app, and complete a brief report. Each submission earns points, and reported issues are displayed on a shared map where other users can view and verify them. As issues gain more verifications, the community is given the opportunity to name them—creating a sense of public visibility and social accountability that encourages municipalities to address problems quickly, before they gain widespread attention.
+## Vision Statement
+
+- This project is a gamified ASP.NET infrastructure reporting application defined by three core features: AI-driven damage analysis for cost estimation, a competitive community leaderboard, and a unique "naming rights" system that allows users to title and track specific hazards like local landmarks. The purpose of this platform is to transform passive residents into active infrastructure monitors, leveraging social accountability to motivate municipalities to prioritize repairs.  While competitors like SeeClickFix and standard 311 apps exist, they function as dry administrative intake forms; our application improves upon this by introducing identity and narrative—turning a generic ticket into a "community cause" - which drives significantly higher engagement and visibility than existing tools.
 
 <!-- omit in toc -->
 ## Table of Contents
@@ -26,7 +28,6 @@ Our application is a gamified platform for reporting infrastructure issues. When
 ## Infrastructure Project Idea
 
 - [Timeline](./doc/timeline-and-release.md)
-- [Vision Statement](./doc/infrastructure_inception/InfrastructureVisionStatement.md)
 - [Mind Map](./doc/infrastructure_inception/InfrastructureAppMindMap.md)
      - [Visualization](./doc/infrastructure_inception/infrastructure_mind_map.svg)
 - [Needs and Features](./doc/infrastructure_inception/NeedsAndFeatures.md)
