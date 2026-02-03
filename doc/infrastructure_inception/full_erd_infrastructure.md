@@ -25,7 +25,7 @@
     * `UserId`: NVARCHAR(450) (PK, FK -> AspNetUsers.Id)
     * `RoleId`: NVARCHAR(450) (PK, FK -> AspNetRoles.Id)
 
-4.  **Reports** 
+4.  **Report** 
     * `Id`: INT (PK, Identity)
     * `Description`: NVARCHAR(MAX)
     * `Status`: NVARCHAR(50) (Pending, Approved, Rejected)
@@ -35,14 +35,14 @@
     * `Longitude`: DECIMAL(9, 6)
     * `ImageUrl`: NVARCHAR(450) (Link to Azure Blob)
 
-5.  **UserPoints** 
+5.  **UserProfile** 
     * `Id`: INT (PK, Identity)
     * `UserId`: NVARCHAR(450) (FK -> AspNetUsers.Id)
     * `CurrentPoints`: INT
     * `LifetimePoints`: INT
     * `LastUpdated`: DATETIME2
 
-6.  **Leaderboards** 
+6.  **Leaderboard** 
     * `Id`: INT (PK, Identity)
     * `UserId`: NVARCHAR(450) (FK -> AspNetUsers.Id)
     * `TotalPoints`: INT

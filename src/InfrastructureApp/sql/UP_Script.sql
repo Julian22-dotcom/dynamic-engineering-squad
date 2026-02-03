@@ -97,9 +97,9 @@ VALUES (@UserId, 'role-guid-user');
 -- init reports
 INSERT INTO [Reports] ([Description], [Status], [CreatedAt], [UserId], [Latitude], [Longitude], [ImageUrl])
 VALUES 
-('Large pothole obstructing the bike lane on 4th St.', 'Unresolved', GETDATE(), @UserId, 45.1158, -122.8974, 'https://placehold.co/600x400?text=Pothole+1'),
-('Faded crosswalk markings near the elementary school.', 'Repaired', GETDATE(), @UserId, 45.1162, -122.8980, 'https://placehold.co/600x400?text=Crosswalk'),
-('Small pothole near the elementary school.', 'In Repair', GETDATE(), @UserId, 45.1162, -122.8980, 'https://placehold.co/600x400?text=Pothole+2');
+('Large pothole obstructing the bike lane on 4th St.', 'Pending', GETDATE(), @UserId, 45.1158, -122.8974, 'https://placehold.co/600x400?text=Pothole+1'),
+('Faded crosswalk markings near the elementary school.', 'Approved', GETDATE(), @UserId, 45.1162, -122.8980, 'https://placehold.co/600x400?text=Crosswalk'),
+('Small pothole near the elementary school.', 'Rejected', GETDATE(), @UserId, 45.1162, -122.8980, 'https://placehold.co/600x400?text=Pothole+2');
 
 -- user points
 INSERT INTO [UserPoints] ([UserId], [CurrentPoints], [LifetimePoints], [LastUpdated])
