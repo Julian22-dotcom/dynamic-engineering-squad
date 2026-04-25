@@ -138,5 +138,73 @@ namespace InfrastructureApp_Tests
             Assert.That(result, Is.TypeOf<RedirectToActionResult>());
             Assert.That(controller.TempData["Success"], Is.EqualTo("Dashboard border updated."));
         }
+
+        [Test]
+        public async Task UpdateActivitySummaryBackground_WhenValidSelection_SetsSuccessAndRedirects()
+        {
+            var repoMock = new Mock<IDashboardRepository>();
+            repoMock
+                .Setup(r => r.UpdateSelectedActivitySummaryBackgroundAsync("user-1", "signal-grid"))
+                .ReturnsAsync(true);
+
+            var controller = new DashboardController(repoMock.Object)
+            {
+                TempData = new Microsoft.AspNetCore.Mvc.ViewFeatures.TempDataDictionary(
+                    new Microsoft.AspNetCore.Http.DefaultHttpContext(),
+                    Mock.Of<Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataProvider>())
+            };
+
+            var identity = new System.Security.Claims.ClaimsIdentity(new[]
+            {
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, "user-1")
+            }, "TestAuth");
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext
+                {
+                    User = new System.Security.Claims.ClaimsPrincipal(identity)
+                }
+            };
+
+            var result = await controller.UpdateActivitySummaryBackground("signal-grid");
+
+            Assert.That(result, Is.TypeOf<RedirectToActionResult>());
+            Assert.That(controller.TempData["Success"], Is.EqualTo("Activity summary background updated."));
+        }
+
+        [Test]
+        public async Task UpdateActivitySummaryBorder_WhenValidSelection_SetsSuccessAndRedirects()
+        {
+            var repoMock = new Mock<IDashboardRepository>();
+            repoMock
+                .Setup(r => r.UpdateSelectedActivitySummaryBorderAsync("user-1", "signal-ring"))
+                .ReturnsAsync(true);
+
+            var controller = new DashboardController(repoMock.Object)
+            {
+                TempData = new Microsoft.AspNetCore.Mvc.ViewFeatures.TempDataDictionary(
+                    new Microsoft.AspNetCore.Http.DefaultHttpContext(),
+                    Mock.Of<Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataProvider>())
+            };
+
+            var identity = new System.Security.Claims.ClaimsIdentity(new[]
+            {
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, "user-1")
+            }, "TestAuth");
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext
+                {
+                    User = new System.Security.Claims.ClaimsPrincipal(identity)
+                }
+            };
+
+            var result = await controller.UpdateActivitySummaryBorder("signal-ring");
+
+            Assert.That(result, Is.TypeOf<RedirectToActionResult>());
+            Assert.That(controller.TempData["Success"], Is.EqualTo("Activity summary border updated."));
+        }
     }
 }

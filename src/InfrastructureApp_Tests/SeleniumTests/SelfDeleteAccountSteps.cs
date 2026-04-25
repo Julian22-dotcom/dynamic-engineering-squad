@@ -8,6 +8,7 @@ using Reqnroll;
 using Microsoft.Extensions.DependencyInjection;
 using InfrastructureApp_Tests.SeleniumTests.Helpers;
 using NUnit.Framework;
+using OpenQA.Selenium.Support.UI;
 
 namespace InfrastructureApp_Tests.StepDefinitions
 {
@@ -37,8 +38,23 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [When(@"I click ""Delete Account""")]
         public void WhenIClickDeleteAccount()
         {
-            var deleteLink = Driver.FindElement(By.XPath("//a[contains(text(), 'Delete Account')] | //button[contains(text(), 'Delete Account')]"));
-            deleteLink.Click();
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var deleteLink = wait.Until(d =>
+            {
+                var element = d.FindElements(By.CssSelector("[data-testid='dashboard-delete-account']"))
+                    .Concat(d.FindElements(By.XPath("//a[contains(text(), 'Delete Account')] | //button[contains(text(), 'Delete Account')]")))
+                    .FirstOrDefault();
+
+                return element is { Displayed: true, Enabled: true } ? element : null;
+            });
+
+            ((IJavaScriptExecutor)Driver).ExecuteScript(
+                "arguments[0].scrollIntoView({ block: 'center', inline: 'nearest' });",
+                deleteLink);
+
+            wait.Until(_ => deleteLink.Displayed && deleteLink.Enabled);
+
+            ScrollAndClick(deleteLink);
         }
 
         [Then(@"I should be on the ""Delete Account"" confirmation page")]

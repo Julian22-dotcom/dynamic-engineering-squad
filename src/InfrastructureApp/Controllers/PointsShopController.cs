@@ -72,7 +72,10 @@ namespace InfrastructureApp.Controllers
                         CostPoints = item.CostPoints,
                         IsSinglePurchase = item.IsSinglePurchase,
                         IsOwned = item.IsOwned,
-                        CanPurchase = item.CanPurchase
+                        CanPurchase = item.CanPurchase,
+                        CategoryLabel = item.CategoryLabel,
+                        PreviewImageUrl = item.PreviewImageUrl,
+                        PreviewCssClass = item.PreviewCssClass
                     })
                     .ToList()
                     .AsReadOnly()

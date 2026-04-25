@@ -66,8 +66,11 @@ namespace InfrastructureApp_Tests.StepDefinitions
         public void WhenIClickOnTheReportWithDescription(string description)
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            // Find the report button that contains a div with the description text
-            var reportBtn = wait.Until(d => d.FindElement(By.XPath($"//button[contains(@class, 'report-item') and .//div[contains(text(), '{description}')]]")));
+            var reportBtn = wait.Until(d =>
+                d.FindElements(By.CssSelector("[data-testid='latest-report-item'], button.report-item"))
+                    .FirstOrDefault(button => button.Text.Contains(description, StringComparison.Ordinal)));
+
+            Assert.That(reportBtn, Is.Not.Null, $"Could not find report item with description '{description}'.");
             ScrollAndClick(reportBtn);
         }
 
@@ -75,11 +78,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void ThenTheReportModalShouldBeDisplayed()
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
-            var modal = wait.Until(d => {
-                var m = d.FindElement(By.Id("reportModal"));
-                return m.Displayed && m.GetAttribute("class").Contains("show") ? m : null;
-            });
+            var modal = WaitForVisibleModal(By.CssSelector("[data-testid='report-modal'], #reportModal"));
             Assert.That(modal, Is.Not.Null);
         }
 
@@ -88,7 +87,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         public void ThenIShouldSeeAFlagButtonInTheModal()
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
-            var flagBtn = wait.Until(d => d.FindElement(By.Id("modalFlagBtn")));
+            var flagBtn = wait.Until(d => d.FindElement(By.CssSelector("[data-testid='modal-flag-button'], #modalFlagBtn")));
             Assert.That(flagBtn.Displayed, Is.True);
         }
 
@@ -157,14 +156,17 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 var modalClass = modal.GetAttribute("class") ?? string.Empty;
                 return modal.Displayed && modalClass.Contains("show");
             });
+
+            ScrollAndClick(flagBtn);
+
+            WaitForVisibleModal(By.Id("flagModal"));
         }
 
         [Then(@"I should be presented with categories ""(.*)"", ""(.*)"", ""(.*)""")]
         [Scope(Feature = "Flag Post")]
         public void ThenIShouldBePresentedWithCategories(string cat1, string cat2, string cat3)
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
-            var body = wait.Until(d => d.FindElement(By.Id("flagModal"))).Text;
+            var body = WaitForVisibleModal(By.Id("flagModal")).Text;
             Assert.Multiple(() =>
             {
                 Assert.That(body, Does.Contain(cat1));
@@ -188,7 +190,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
             var submitBtn = wait.Until(d => d.FindElement(By.Id("submitFlagBtn")));
-            submitBtn.Click();
+            ScrollAndClick(submitBtn);
         }
 
         [Then(@"I should see a confirmation message ""(.*)""")]
@@ -208,8 +210,13 @@ namespace InfrastructureApp_Tests.StepDefinitions
         public void ThenTheReportingInterfaceShouldClose()
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            wait.Until(d => !d.FindElement(By.Id("flagModal")).Displayed);
-            Assert.That(Driver.FindElement(By.Id("flagModal")).Displayed, Is.False);
+            wait.Until(d =>
+            {
+                var modal = d.FindElement(By.Id("flagModal"));
+                return !modal.Displayed || !modal.GetAttribute("class").Contains("show", StringComparison.Ordinal);
+            });
+
+            Assert.That(Driver.FindElement(By.Id("flagModal")).GetAttribute("class"), Does.Not.Contain("show"));
         }
 
         [Then(@"the ""Flag"" icon should be disabled and show ""Already Flagged""")]
@@ -245,6 +252,22 @@ namespace InfrastructureApp_Tests.StepDefinitions
 
             // Refresh the page to reflect the DB change
             Driver.Navigate().Refresh();
+        }
+
+        private IWebElement WaitForVisibleModal(By by)
+        {
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
+
+            return wait.Until(d =>
+            {
+                var modal = d.FindElement(by);
+                var className = modal.GetAttribute("class") ?? string.Empty;
+                var ariaHidden = modal.GetAttribute("aria-hidden");
+                return modal.Displayed && className.Contains("show", StringComparison.Ordinal) && ariaHidden != "true"
+                    ? modal
+                    : null;
+            })!;
         }
     }
 }

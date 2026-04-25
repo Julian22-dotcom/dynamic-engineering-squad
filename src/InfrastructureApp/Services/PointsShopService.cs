@@ -44,9 +44,15 @@ namespace InfrastructureApp.Services
                 .ToListAsync();
 
             var items = activeItems
+                .Where(i => !PointsShopCatalog.ShouldHideFromShop(i.Name))
                 .Select(i =>
                 {
                     var isOwned = i.IsSinglePurchase && ownedSet.Contains(i.Id);
+                    var background = PointsShopCatalog.GetDashboardBackgroundByName(i.Name);
+                    var activitySummaryBackground = PointsShopCatalog.GetActivitySummaryBackgroundByName(i.Name);
+                    var border = PointsShopCatalog.GetDashboardBorderByName(i.Name);
+                    var activitySummaryBorder = PointsShopCatalog.GetActivitySummaryBorderByName(i.Name);
+
                     return new PointsShopItemSummary
                     {
                         Id = i.Id,
@@ -55,7 +61,10 @@ namespace InfrastructureApp.Services
                         CostPoints = i.CostPoints,
                         IsSinglePurchase = i.IsSinglePurchase,
                         IsOwned = isOwned,
-                        CanPurchase = !isOwned && currentPoints >= i.CostPoints
+                        CanPurchase = !isOwned && currentPoints >= i.CostPoints,
+                        CategoryLabel = background?.CategoryLabel ?? activitySummaryBackground?.CategoryLabel ?? border?.CategoryLabel ?? activitySummaryBorder?.CategoryLabel ?? "Shop Item",
+                        PreviewImageUrl = background?.ImageUrl ?? activitySummaryBackground?.ImageUrl,
+                        PreviewCssClass = border?.PreviewCssClass ?? activitySummaryBorder?.PreviewCssClass
                     };
                 })
                 .ToList();
@@ -84,6 +93,15 @@ namespace InfrastructureApp.Services
                     return PointsShopPurchaseResult.Failure(
                         "That shop item is unavailable.",
                         missingBalance,
+                        shopItemId);
+                }
+
+                if (PointsShopCatalog.ShouldHideFromShop(item.Name))
+                {
+                    var hiddenBalance = await GetCurrentPointsAsync(userId);
+                    return PointsShopPurchaseResult.Failure(
+                        "That shop item is unavailable.",
+                        hiddenBalance,
                         shopItemId);
                 }
 
@@ -162,18 +180,25 @@ namespace InfrastructureApp.Services
         private async Task EnsureSeedDataAsync()
         {
             var existingNames = await _db.ShopItems
-                .Select(i => i.Name)
+                .AsNoTracking()
+                .Select(item => item.Name)
                 .ToListAsync();
 
+            var existingNameSet = existingNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var seenSeedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             var missingItems = PointsShopCatalog.GetStarterItems()
-                .Where(item => !existingNames.Contains(item.Name))
+                .Where(item => seenSeedNames.Add(item.Name))
+                .Where(item => !existingNameSet.Contains(item.Name))
                 .ToList();
 
-            if (missingItems.Count > 0)
+            if (missingItems.Count == 0)
             {
-                _db.ShopItems.AddRange(missingItems);
-                await _db.SaveChangesAsync();
+                return;
             }
+
+            _db.ShopItems.AddRange(missingItems);
+            await _db.SaveChangesAsync();
         }
     }
 }

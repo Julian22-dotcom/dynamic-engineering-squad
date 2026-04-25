@@ -15,5 +15,11 @@ namespace InfrastructureApp.ViewModels
         public bool IsOwned { get; init; }
 
         public bool CanPurchase { get; init; }
+
+        public string CategoryLabel { get; init; } = "";
+
+        public string? PreviewImageUrl { get; init; }
+
+        public string? PreviewCssClass { get; init; }
     }
 }

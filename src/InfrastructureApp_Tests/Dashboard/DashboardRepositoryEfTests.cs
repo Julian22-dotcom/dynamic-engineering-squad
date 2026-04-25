@@ -203,6 +203,200 @@ namespace InfrastructureApp_Tests.Dashboard
         }
 
         [Test]
+        public async Task UpdateSelectedActivitySummaryBackgroundAsync_WhenUnlocked_UpdatesUserPreference()
+        {
+            var background = PointsShopCatalog.GetActivitySummaryBackgroundByKey("signal-grid")!;
+            var user = new Users
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "helen",
+                Email = "helen@test.com",
+                EmailConfirmed = true
+            };
+            _db.Users.Add(user);
+
+            var item = new ShopItem
+            {
+                Name = background.Name,
+                Description = background.Description,
+                CostPoints = 10,
+                IsSinglePurchase = true,
+                IsActive = true
+            };
+            _db.ShopItems.Add(item);
+            await _db.SaveChangesAsync();
+
+            _db.UserShopItemPurchases.Add(new UserShopItemPurchase
+            {
+                UserId = user.Id,
+                ShopItemId = item.Id,
+                CostPoints = 10,
+                PurchasedAt = DateTime.UtcNow
+            });
+            await _db.SaveChangesAsync();
+
+            var repo = new DashboardRepositoryEf(_db, CreateUserManager(user), Mock.Of<IHttpContextAccessor>());
+
+            var updated = await repo.UpdateSelectedActivitySummaryBackgroundAsync(user.Id, background.Key);
+
+            Assert.That(updated, Is.True);
+            Assert.That(user.SelectedActivitySummaryBackgroundKey, Is.EqualTo(background.Key));
+        }
+
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenActivitySummaryBackgroundPurchased_ReturnsBackgroundUrl()
+        {
+            var background = PointsShopCatalog.GetActivitySummaryBackgroundByKey("amber-wave")!;
+            var user = new Users
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "ivy",
+                Email = "ivy@test.com",
+                EmailConfirmed = true,
+                SelectedActivitySummaryBackgroundKey = background.Key
+            };
+            _db.Users.Add(user);
+
+            var item = new ShopItem
+            {
+                Name = background.Name,
+                Description = background.Description,
+                CostPoints = 10,
+                IsSinglePurchase = true,
+                IsActive = true
+            };
+            _db.ShopItems.Add(item);
+            await _db.SaveChangesAsync();
+
+            _db.UserShopItemPurchases.Add(new UserShopItemPurchase
+            {
+                UserId = user.Id,
+                ShopItemId = item.Id,
+                CostPoints = 10,
+                PurchasedAt = DateTime.UtcNow
+            });
+            await _db.SaveChangesAsync();
+
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new DefaultHttpContext();
+            httpContext.User = new System.Security.Claims.ClaimsPrincipal(
+                new System.Security.Claims.ClaimsIdentity(new[]
+                {
+                    new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, user.Id)
+                }, "TestAuth"));
+            httpContextAccessor.SetupGet(x => x.HttpContext).Returns(httpContext);
+
+            var userManager = CreateUserManager(user);
+            Mock.Get(userManager)
+                .Setup(m => m.GetUserAsync(httpContext.User))
+                .ReturnsAsync(user);
+
+            var repo = new DashboardRepositoryEf(_db, userManager, httpContextAccessor.Object);
+
+            var result = await repo.GetDashboardSummaryAsync();
+
+            Assert.That(result.ActivitySummaryBackgroundUrl, Is.EqualTo(background.ImageUrl));
+            Assert.That(result.SelectedActivitySummaryBackgroundKey, Is.EqualTo(background.Key));
+        }
+
+        [Test]
+        public async Task UpdateSelectedActivitySummaryBorderAsync_WhenUnlocked_UpdatesUserPreference()
+        {
+            var border = PointsShopCatalog.GetActivitySummaryBorderByKey("signal-ring")!;
+            var user = new Users
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "jane",
+                Email = "jane@test.com",
+                EmailConfirmed = true
+            };
+            _db.Users.Add(user);
+
+            var item = new ShopItem
+            {
+                Name = border.Name,
+                Description = border.Description,
+                CostPoints = 10,
+                IsSinglePurchase = true,
+                IsActive = true
+            };
+            _db.ShopItems.Add(item);
+            await _db.SaveChangesAsync();
+
+            _db.UserShopItemPurchases.Add(new UserShopItemPurchase
+            {
+                UserId = user.Id,
+                ShopItemId = item.Id,
+                CostPoints = 10,
+                PurchasedAt = DateTime.UtcNow
+            });
+            await _db.SaveChangesAsync();
+
+            var repo = new DashboardRepositoryEf(_db, CreateUserManager(user), Mock.Of<IHttpContextAccessor>());
+
+            var updated = await repo.UpdateSelectedActivitySummaryBorderAsync(user.Id, border.Key);
+
+            Assert.That(updated, Is.True);
+            Assert.That(user.SelectedActivitySummaryBorderKey, Is.EqualTo(border.Key));
+        }
+
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenActivitySummaryBorderPurchased_ReturnsBorderCssClass()
+        {
+            var border = PointsShopCatalog.GetActivitySummaryBorderByKey("amber-rail")!;
+            var user = new Users
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "kate",
+                Email = "kate@test.com",
+                EmailConfirmed = true,
+                SelectedActivitySummaryBorderKey = border.Key
+            };
+            _db.Users.Add(user);
+
+            var item = new ShopItem
+            {
+                Name = border.Name,
+                Description = border.Description,
+                CostPoints = 10,
+                IsSinglePurchase = true,
+                IsActive = true
+            };
+            _db.ShopItems.Add(item);
+            await _db.SaveChangesAsync();
+
+            _db.UserShopItemPurchases.Add(new UserShopItemPurchase
+            {
+                UserId = user.Id,
+                ShopItemId = item.Id,
+                CostPoints = 10,
+                PurchasedAt = DateTime.UtcNow
+            });
+            await _db.SaveChangesAsync();
+
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            var httpContext = new DefaultHttpContext();
+            httpContext.User = new System.Security.Claims.ClaimsPrincipal(
+                new System.Security.Claims.ClaimsIdentity(new[]
+                {
+                    new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, user.Id)
+                }, "TestAuth"));
+            httpContextAccessor.SetupGet(x => x.HttpContext).Returns(httpContext);
+
+            var userManager = CreateUserManager(user);
+            Mock.Get(userManager)
+                .Setup(m => m.GetUserAsync(httpContext.User))
+                .ReturnsAsync(user);
+
+            var repo = new DashboardRepositoryEf(_db, userManager, httpContextAccessor.Object);
+
+            var result = await repo.GetDashboardSummaryAsync();
+
+            Assert.That(result.ActivitySummaryBorderCssClass, Is.EqualTo(border.CssClass));
+            Assert.That(result.SelectedActivitySummaryBorderKey, Is.EqualTo(border.Key));
+        }
+
+        [Test]
         public async Task UpdateSelectedDashboardBorderAsync_WhenUnlocked_UpdatesUserPreference()
         {
             var border = PointsShopCatalog.GetDashboardBorderByKey("steel-frame")!;

@@ -48,7 +48,8 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <div class="card">
+        <div class="card dashboard-activity-card @(Model.HasActivitySummaryBackground ? "dashboard-personal-card--unlocked" : "") @(Model.ActivitySummaryBorderCssClass ?? "")"
+             style="@(Model.HasActivitySummaryBackground ? $"background-image: linear-gradient(rgba(19, 19, 19, 0.35), rgba(19, 19, 19, 0.78)), url('{Model.ActivitySummaryBackgroundUrl}');" : null)">
             <div class="card-header">
                 Activity Summary
             </div>
@@ -105,6 +106,67 @@
                             </div>
                         }
 
+                        <div class="fw-semibold mb-2">Activity summary background</div>
+                        <form asp-action="UpdateActivitySummaryBackground" asp-controller="Dashboard" method="post" class="dashboard-background-form mb-3">
+                            @Html.AntiForgeryToken()
+                            <div class="d-flex flex-column flex-sm-row gap-2 align-items-sm-center">
+                                <select id="selectedActivitySummaryBackgroundKey" name="selectedBackgroundKey" class="form-select">
+                                    <option value="">Default gray</option>
+                                    @foreach (var background in Model.AvailableActivitySummaryBackgrounds)
+                                    {
+                                        <option value="@background.Key" selected="@(Model.SelectedActivitySummaryBackgroundKey == background.Key)">
+                                            @background.Name
+                                        </option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-warning text-nowrap">Apply Background</button>
+                            </div>
+                        </form>
+
+                        @if (Model.AvailableActivitySummaryBackgrounds.Count > 0)
+                        {
+                            <div class="small text-muted mb-2">Unlocked activity backgrounds</div>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                @foreach (var background in Model.AvailableActivitySummaryBackgrounds)
+                                {
+                                    <div class="dashboard-background-preview @(Model.SelectedActivitySummaryBackgroundKey == background.Key ? "dashboard-background-preview--active" : "")"
+                                         title="@background.Name"
+                                         style="background-image: linear-gradient(rgba(18, 18, 18, 0.2), rgba(18, 18, 18, 0.45)), url('@background.PreviewUrl');">
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="fw-semibold mb-2">Activity summary border</div>
+                        <form asp-action="UpdateActivitySummaryBorder" asp-controller="Dashboard" method="post" class="dashboard-border-form mb-3">
+                            @Html.AntiForgeryToken()
+                            <div class="d-flex flex-column flex-sm-row gap-2 align-items-sm-center">
+                                <select id="selectedActivitySummaryBorderKey" name="selectedBorderKey" class="form-select">
+                                    <option value="">Default border</option>
+                                    @foreach (var border in Model.AvailableActivitySummaryBorders)
+                                    {
+                                        <option value="@border.Key" selected="@(Model.SelectedActivitySummaryBorderKey == border.Key)">
+                                            @border.Name
+                                        </option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-warning text-nowrap">Apply Border</button>
+                            </div>
+                        </form>
+
+                        @if (Model.AvailableActivitySummaryBorders.Count > 0)
+                        {
+                            <div class="small text-muted mb-2">Unlocked activity borders</div>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                @foreach (var border in Model.AvailableActivitySummaryBorders)
+                                {
+                                    <div class="dashboard-border-preview @border.PreviewCssClass @(Model.SelectedActivitySummaryBorderKey == border.Key ? "dashboard-border-preview--active" : "")"
+                                         title="@border.Name">
+                                    </div>
+                                }
+                            </div>
+                        }
+
                         <div class="fw-semibold mb-2">Personal card border</div>
                         <form asp-action="UpdateBorder" asp-controller="Dashboard" method="post" class="dashboard-border-form mb-3">
                             @Html.AntiForgeryToken()
@@ -137,6 +199,7 @@
                     </div>
                 }
                 <a class="btn btn-outline-danger btn-sm"
+                   data-testid="dashboard-delete-account"
                    asp-controller="Account"
                    asp-action="DeleteAccount">
                     Delete Account

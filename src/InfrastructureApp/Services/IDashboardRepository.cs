@@ -13,6 +13,10 @@ namespace InfrastructureApp.Services
 
         Task<bool> UpdateSelectedDashboardBackgroundAsync(string userId, string? selectedBackgroundKey);
 
+        Task<bool> UpdateSelectedActivitySummaryBackgroundAsync(string userId, string? selectedBackgroundKey);
+
         Task<bool> UpdateSelectedDashboardBorderAsync(string userId, string? selectedBorderKey);
+
+        Task<bool> UpdateSelectedActivitySummaryBorderAsync(string userId, string? selectedBorderKey);
     }
 }

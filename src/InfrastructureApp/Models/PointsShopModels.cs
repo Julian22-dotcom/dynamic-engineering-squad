@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InfrastructureApp.Services
+namespace InfrastructureApp.Models
 {
     public class PointsShopItemSummary
     {
@@ -18,6 +18,12 @@ namespace InfrastructureApp.Services
         public bool IsOwned { get; init; }
 
         public bool CanPurchase { get; init; }
+
+        public string CategoryLabel { get; init; } = "";
+
+        public string? PreviewImageUrl { get; init; }
+
+        public string? PreviewCssClass { get; init; }
     }
 
     public class PointsShopSnapshot

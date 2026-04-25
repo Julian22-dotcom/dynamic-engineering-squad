@@ -4,28 +4,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const flagMessage = document.getElementById('flagMessage');
     const flagModalEl = document.getElementById('flagModal');
     const flagReportIdInput = document.getElementById('flagReportId');
-    let flagModal = null;
+    function showFlagModal() {
+        if (!flagModalEl) {
+            return;
+        }
 
-    if (flagModalEl) {
-        flagModal = new bootstrap.Modal(flagModalEl);
-        
-        flagModalEl.addEventListener('hidden.bs.modal', () => {
+        flagModalEl.style.display = 'block';
+        flagModalEl.removeAttribute('aria-hidden');
+        flagModalEl.setAttribute('aria-modal', 'true');
+        flagModalEl.classList.add('show');
+        document.body.classList.add('modal-open');
+    }
+
+    function hideFlagModal() {
+        if (!flagModalEl) {
+            return;
+        }
+
+        flagModalEl.classList.remove('show');
+        flagModalEl.setAttribute('aria-hidden', 'true');
+        flagModalEl.removeAttribute('aria-modal');
+        flagModalEl.style.display = 'none';
+        document.body.classList.remove('modal-open');
+
+        if (flagForm) {
             flagForm.reset();
+        }
+        if (flagMessage) {
             flagMessage.classList.add('d-none');
             flagMessage.textContent = '';
+        }
+        if (submitFlagBtn) {
             submitFlagBtn.disabled = false;
             submitFlagBtn.textContent = 'Submit Report';
-        });
+        }
     }
+
+    window.showFlagModalFromButton = function (btn) {
+        if (!btn || btn.disabled) {
+            return;
+        }
+
+        const reportId = btn.getAttribute('data-report-id');
+        if (flagReportIdInput) {
+            flagReportIdInput.value = reportId;
+        }
+
+        showFlagModal();
+    };
 
     // Use event delegation or check for elements
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('#flagBtn, #modalFlagBtn');
         if (btn) {
-            const reportId = btn.getAttribute('data-report-id');
-            if (flagReportIdInput) {
-                flagReportIdInput.value = reportId;
-            }
+            window.showFlagModalFromButton(btn);
         }
     });
 
@@ -76,9 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     setTimeout(() => {
-                        if (flagModal) {
-                            flagModal.hide();
-                        }
+                        hideFlagModal();
                     }, 1500);
                 } else {
                     flagMessage.textContent = result.message || 'An error occurred.';

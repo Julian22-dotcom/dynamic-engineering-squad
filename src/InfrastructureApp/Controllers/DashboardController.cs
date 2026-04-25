@@ -67,6 +67,31 @@ namespace InfrastructureApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateActivitySummaryBackground(string? selectedBackgroundKey)
+        {
+            var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized();
+            }
+
+            var updated = await _dashboardRepo.UpdateSelectedActivitySummaryBackgroundAsync(userId, selectedBackgroundKey);
+            if (updated)
+            {
+                TempData["Success"] = string.IsNullOrWhiteSpace(selectedBackgroundKey)
+                    ? "Activity summary background reset to default."
+                    : "Activity summary background updated.";
+            }
+            else
+            {
+                TempData["Error"] = "That activity summary background is unavailable.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateBorder(string? selectedBorderKey)
         {
             var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -85,6 +110,31 @@ namespace InfrastructureApp.Controllers
             else
             {
                 TempData["Error"] = "That dashboard border is unavailable.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateActivitySummaryBorder(string? selectedBorderKey)
+        {
+            var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized();
+            }
+
+            var updated = await _dashboardRepo.UpdateSelectedActivitySummaryBorderAsync(userId, selectedBorderKey);
+            if (updated)
+            {
+                TempData["Success"] = string.IsNullOrWhiteSpace(selectedBorderKey)
+                    ? "Activity summary border reset to default."
+                    : "Activity summary border updated.";
+            }
+            else
+            {
+                TempData["Error"] = "That activity summary border is unavailable.";
             }
 
             return RedirectToAction(nameof(Index));

@@ -40,12 +40,15 @@ else
 
             <button type="button"
                     class="list-group-item list-group-item-action d-flex justify-content-between align-items-start report-item"
+                    data-testid="latest-report-item"
+                    aria-controls="reportModal"
+                    onclick="window.openLatestReportModal?.(this)"
                     data-report-id="@r.Id"
                     data-bs-toggle="modal" data-bs-target="#reportModal" data-reportid="@r.Id" data-description="@r.Description"
                     data-created="@r.CreatedAt.ToLocalTime().ToString("f")" data-status="@r.Status" data-image="@r.ImageUrl">
 
                 <div class="me-3">
-                    <div class="fw-bold">@r.Description</div>
+                    <div class="fw-bold report-text-wrap text-break">@r.Description</div>
                 </div>
 
                 <small class="text-muted">
@@ -57,7 +60,7 @@ else
     </div>
 }
 <!-- Report Details Modal -->
-<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+<div class="modal fade" id="reportModal" data-testid="report-modal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -75,7 +78,7 @@ else
                 </div>
 
                 <p class="mb-1"><strong>Description</strong></p>
-                <p id="modalDescription" class="mb-3"></p>
+                <p id="modalDescription" class="mb-3 report-text-wrap text-break"></p>
 
                 <p class="mb-1"><strong>Created</strong></p>
                 <p id="modalCreated" class="mb-3"></p>
@@ -134,7 +137,8 @@ else
                     <!-- Community Flagging -->
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <button id="modalFlagBtn" class="btn btn-outline-danger btn-sm fw-bold" 
+                        <button id="modalFlagBtn" data-testid="flag-button modal-flag-button" class="btn btn-outline-danger btn-sm fw-bold" 
+                                onclick="window.showFlagModalFromButton?.(this)"
                                 data-report-id="" data-bs-toggle="modal" data-bs-target="#flagModal">
                             <i class="fa-solid fa-flag me-1"></i>
                             Flag

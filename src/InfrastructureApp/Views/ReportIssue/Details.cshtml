@@ -54,7 +54,10 @@
             </p>
         }
         <p><strong>Created:</strong> @Model.CreatedAt</p>
-        <p><strong>Description:</strong><br />@Model.Description</p>
+        <p>
+            <strong>Description:</strong><br />
+            <span class="report-text-wrap text-break">@Model.Description</span>
+        </p>
         <p><strong>Location:</strong> (@Model.Latitude, @Model.Longitude)</p>
 
         <div class="mt-3">
@@ -186,6 +189,8 @@
         @if (User.Identity?.IsAuthenticated == true)
         {
             <button id="flagBtn"
+                    data-testid="flag-button"
+                    onclick="window.showFlagModalFromButton?.(this)"
                     class="btn @(ViewBag.UserHasFlagged ? "btn-secondary" : "btn-outline-danger") fw-bold"
                     data-report-id="@Model.Id"
                     data-bs-toggle="@(ViewBag.UserHasFlagged ? "" : "modal")"

@@ -96,7 +96,7 @@ namespace InfrastructureApp_Tests.PointsShop
         public async Task PurchaseAsync_SuccessfulPurchase_DeductsCorrectPoints()
         {
             var userId = "user-1";
-            var item = await AddShopItemAsync("Golden Reporter Title", 25);
+            var item = await AddShopItemAsync("Test Purchase Item One", 25);
             await SeedPointsAsync(userId, 60, 60);
 
             var result = await _service.PurchaseAsync(userId, item.Id);
@@ -112,7 +112,7 @@ namespace InfrastructureApp_Tests.PointsShop
         public async Task PurchaseAsync_SuccessfulPurchase_RecordsUserPurchase()
         {
             var userId = "user-2";
-            var item = await AddShopItemAsync("Map Pin Cosmetic", 40);
+            var item = await AddShopItemAsync("Test Purchase Item Two", 40);
             await SeedPointsAsync(userId, 75, 75);
 
             var result = await _service.PurchaseAsync(userId, item.Id);
@@ -127,7 +127,7 @@ namespace InfrastructureApp_Tests.PointsShop
         public async Task PurchaseAsync_InsufficientPoints_RejectsPurchase()
         {
             var userId = "user-3";
-            var item = await AddShopItemAsync("Premium Profile Frame", 60);
+            var item = await AddShopItemAsync("Test Expensive Item", 60);
             await SeedPointsAsync(userId, 20, 20);
 
             var result = await _service.PurchaseAsync(userId, item.Id);
@@ -144,7 +144,7 @@ namespace InfrastructureApp_Tests.PointsShop
         public async Task PurchaseAsync_SinglePurchaseItemCannotBeBoughtTwice()
         {
             var userId = "user-4";
-            var item = await AddShopItemAsync("Dark Theme Badge", 15);
+            var item = await AddShopItemAsync("Test Single Purchase Item", 15);
             await SeedPointsAsync(userId, 100, 100);
 
             var first = await _service.PurchaseAsync(userId, item.Id);
@@ -183,7 +183,6 @@ namespace InfrastructureApp_Tests.PointsShop
         public async Task GetShopAsync_ReturnsBalanceOwnershipAndPurchaseStatus()
         {
             var userId = "user-6";
-            await SeedStarterCatalogAsync(isActive: false);
 
             var ownedItem = await AddShopItemAsync("Owned Cosmetic", 20);
             var affordableItem = await AddShopItemAsync("Affordable Cosmetic", 10);
@@ -202,7 +201,9 @@ namespace InfrastructureApp_Tests.PointsShop
             var snapshot = await _service.GetShopAsync(userId);
 
             Assert.That(snapshot.CurrentPoints, Is.EqualTo(15));
-            Assert.That(snapshot.Items.Count, Is.EqualTo(2));
+            Assert.That(snapshot.Items.Any(i => i.Id == ownedItem.Id), Is.True);
+            Assert.That(snapshot.Items.Any(i => i.Id == affordableItem.Id), Is.True);
+            Assert.That(snapshot.Items.Any(i => i.Name == "Inactive Cosmetic"), Is.False);
 
             var ownedSummary = snapshot.Items.Single(i => i.Id == ownedItem.Id);
             Assert.That(ownedSummary.IsOwned, Is.True);
@@ -225,6 +226,26 @@ namespace InfrastructureApp_Tests.PointsShop
             Assert.That(snapshot.Items.Any(i => i.Name == PointsShopCatalog.DashboardBackgroundImageItemName), Is.True);
             Assert.That(snapshot.Items.Count(i => PointsShopCatalog.GetDashboardBackgroundByName(i.Name) != null), Is.EqualTo(5));
             Assert.That(snapshot.Items.Count(i => PointsShopCatalog.GetDashboardBorderByName(i.Name) != null), Is.EqualTo(5));
+        }
+
+        [Test]
+        public async Task GetShopAsync_WhenLegacyAndRetiredItemsExist_NormalizesAndHidesThem()
+        {
+            var userId = "user-8";
+            await AddShopItemAsync("Dashboard Background Image", 10);
+            await AddShopItemAsync("Signal Glow Background", 10);
+            await AddShopItemAsync("Golden Reporter Title", 25);
+            await SeedPointsAsync(userId, 50, 50);
+
+            var snapshot = await _service.GetShopAsync(userId);
+
+            Assert.That(snapshot.Items.Any(i => i.Name == "Dashboard Background Image"), Is.False);
+            Assert.That(snapshot.Items.Any(i => i.Name == "Signal Glow Background"), Is.False);
+            Assert.That(snapshot.Items.Any(i => i.Name == "Golden Reporter Title"), Is.False);
+            Assert.That(snapshot.Items.Any(i => i.Name == "Safety Wave Background"), Is.True);
+
+            var legacyItem = await _db.ShopItems.SingleAsync(i => i.Name == "Safety Wave Background");
+            Assert.That(legacyItem.IsActive, Is.True);
         }
     }
 }
