@@ -9,11 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        flagModalEl.style.display = 'block';
-        flagModalEl.removeAttribute('aria-hidden');
-        flagModalEl.setAttribute('aria-modal', 'true');
-        flagModalEl.classList.add('show');
-        document.body.classList.add('modal-open');
+        if (window.bootstrap?.Modal) {
+            bootstrap.Modal.getOrCreateInstance(flagModalEl).show();
+        } else {
+            flagModalEl.style.display = 'block';
+            flagModalEl.removeAttribute('aria-hidden');
+            flagModalEl.setAttribute('aria-modal', 'true');
+            flagModalEl.classList.add('show');
+            document.body.classList.add('modal-open');
+        }
     }
 
     function hideFlagModal() {
@@ -21,11 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        flagModalEl.classList.remove('show');
-        flagModalEl.setAttribute('aria-hidden', 'true');
-        flagModalEl.removeAttribute('aria-modal');
-        flagModalEl.style.display = 'none';
-        document.body.classList.remove('modal-open');
+        if (window.bootstrap?.Modal) {
+            const instance = bootstrap.Modal.getInstance(flagModalEl);
+            if (instance) {
+                instance.hide();
+            }
+            // Cleanup in case of stacking issues
+            setTimeout(() => {
+                if (!document.querySelector('.modal.show')) {
+                    document.body.classList.remove('modal-open');
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) backdrop.remove();
+                }
+            }, 500);
+        } else {
+            flagModalEl.classList.remove('show');
+            flagModalEl.setAttribute('aria-hidden', 'true');
+            flagModalEl.removeAttribute('aria-modal');
+            flagModalEl.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
 
         if (flagForm) {
             flagForm.reset();
