@@ -8,6 +8,18 @@
 @model InfrastructureApp.Models.ReportIssue
 @{
     ViewData["Title"] = "Report Submitted";
+
+    if (Model.Status == "Approved")
+    {
+        var issueUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/ReportIssue/Details/{Model.Id}";
+        ViewData["OgUrl"] = issueUrl;
+        ViewData["OgTitle"] = "Infrastructure Issue on PatchNotes";
+        ViewData["OgDescription"] = Model.Description;
+        if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            ViewData["OgImage"] = Model.ImageUrl;
+        }
+    }
 }
 
 <div class="container py-4">
@@ -206,6 +218,23 @@
             </a>
         }
     </div>
+
+    @if (Model.Status == "Approved" && User.Identity?.IsAuthenticated == true)
+    {
+        var shareUrl = Uri.EscapeDataString($"{Context.Request.Scheme}://{Context.Request.Host}/ReportIssue/Details/{Model.Id}");
+        var facebookShareUrl = $"https://www.facebook.com/sharer/sharer.php?u={shareUrl}";
+        <div class="mt-3">
+            <p class="mb-2"><strong>Share this issue:</strong></p>
+            <a href="@facebookShareUrl"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="btn btn-primary fw-bold"
+               aria-label="Share on Facebook">
+                <i class="fa-brands fa-facebook me-1"></i>
+                Facebook
+            </a>
+        </div>
+    }
 
     <div class="mt-3 d-flex gap-2">
         <a class="btn report-action-btn"

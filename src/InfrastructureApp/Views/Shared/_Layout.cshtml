@@ -9,6 +9,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PatchNotes</title>
+    @if (ViewData["OgUrl"] != null)
+    {
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="@ViewData["OgUrl"]" />
+        <meta property="og:title" content="@ViewData["OgTitle"]" />
+        <meta property="og:description" content="@ViewData["OgDescription"]" />
+        @if (ViewData["OgImage"] != null)
+        {
+            <meta property="og:image" content="@ViewData["OgImage"]" />
+        }
+    }
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
