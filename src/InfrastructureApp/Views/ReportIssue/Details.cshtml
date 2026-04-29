@@ -17,7 +17,10 @@
         ViewData["OgDescription"] = Model.Description;
         if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
         {
-            ViewData["OgImage"] = Model.ImageUrl;
+            var imgUrl = Model.ImageUrl.StartsWith("/")
+                ? $"{Context.Request.Scheme}://{Context.Request.Host}{Model.ImageUrl}"
+                : Model.ImageUrl;
+            ViewData["OgImage"] = imgUrl;
         }
     }
 }
