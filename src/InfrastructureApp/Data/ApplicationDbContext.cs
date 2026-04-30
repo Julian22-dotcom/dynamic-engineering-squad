@@ -19,6 +19,8 @@ namespace InfrastructureApp.Data
         //will initialize this property at runtime.
         public DbSet<UserPoints> UserPoints { get; set; } = null!;
 
+        public DbSet<MinigamePlay> MinigamePlays { get; set; } = null!;
+
         public DbSet<ShopItem> ShopItems { get; set; } = null!;
 
         public DbSet<UserShopItemPurchase> UserShopItemPurchases { get; set; } = null!;
@@ -71,6 +73,26 @@ namespace InfrastructureApp.Data
             builder.Entity<UserPoints>()
                 .Property(up => up.LastUpdated)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
+
+            builder.Entity<MinigamePlay>(entity =>
+            {
+                entity.Property(play => play.UserId)
+                    .HasMaxLength(450)
+                    .IsRequired();
+
+                entity.Property(play => play.GameKey)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(play => play.PlayedOnDate)
+                    .HasColumnType("date");
+
+                entity.Property(play => play.CreatedAt)
+                    .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                entity.HasIndex(play => new { play.UserId, play.GameKey, play.PlayedOnDate })
+                    .IsUnique();
+            });
 
             builder.Entity<ShopItem>(entity =>
             {

@@ -4,6 +4,7 @@ using InfrastructureApp.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using InfrastructureApp.Services;
+using InfrastructureApp.Services.Minigames;
 using Microsoft.Extensions.Options;
 using InfrastructureApp.Services.ContentModeration;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -66,6 +67,7 @@ builder.Services.AddScoped<IEmailService, AzureEmailService>();
 builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepositoryEf>();
 builder.Services.AddScoped<LeaderboardService>();
 builder.Services.AddScoped<IPointsShopService, PointsShopService>();
+builder.Services.AddScoped<IMinigameService, MinigameService>();
 
 // Added Repository DI (Dependency Injection) for ReportIssueRepositoryEf
 //dependency injection configuration. They tell the application what concrete classes to use whenever an interface is requested.
