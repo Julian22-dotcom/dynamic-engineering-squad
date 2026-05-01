@@ -104,6 +104,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 var button = d.FindElement(By.Id("modalFlagBtn"));
                 return button.Displayed && button.Enabled ? button : null;
             });
+            WaitForFlagModalScript(wait);
             ScrollAndClick(flagBtn);
             
             wait.Until(d => {
@@ -149,6 +150,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 var button = d.FindElement(By.Id("flagBtn"));
                 return button.Displayed && button.Enabled ? button : null;
             });
+            WaitForFlagModalScript(wait);
             ScrollAndClick(flagBtn);
             
             wait.Until(d => {
@@ -156,10 +158,6 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 var modalClass = modal.GetAttribute("class") ?? string.Empty;
                 return modal.Displayed && modalClass.Contains("show");
             });
-
-            ScrollAndClick(flagBtn);
-
-            WaitForVisibleModal(By.Id("flagModal"));
         }
 
         [Then(@"I should be presented with categories ""(.*)"", ""(.*)"", ""(.*)""")]
@@ -268,6 +266,13 @@ namespace InfrastructureApp_Tests.StepDefinitions
                     ? modal
                     : null;
             })!;
+        }
+
+        private static void WaitForFlagModalScript(WebDriverWait wait)
+        {
+            wait.Until(d =>
+                ((IJavaScriptExecutor)d).ExecuteScript("return typeof window.showFlagModalFromButton === 'function';")
+                    is true);
         }
     }
 }
