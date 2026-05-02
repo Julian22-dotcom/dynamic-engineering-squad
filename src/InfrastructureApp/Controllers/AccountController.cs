@@ -42,8 +42,17 @@ namespace InfrastructureApp.Controllers
             {
                 return View(model);
             }
+
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user != null && user.IsBanned)
+            {
+                ModelState.AddModelError(string.Empty, "Account Suspended");
+                return View(model);
+            }
+
             var result = await _signInManager
                 .PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+
             if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home");
@@ -51,7 +60,6 @@ namespace InfrastructureApp.Controllers
 
             if (result.IsNotAllowed)
             {
-                var user = await _userManager.FindByNameAsync(model.UserName);
                 if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
                 {
                     ModelState.AddModelError(string.Empty, "You must confirm your email before logging in.");
@@ -168,10 +176,11 @@ namespace InfrastructureApp.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Admin(int page = 1)
+        public async Task<IActionResult> Admin(string? searchTerm, int page = 1)
         {
             var pageSize = 10;
-            var model = await _userService.GetUsersWithRolesAsync(page, pageSize);
+            var model = await _userService.GetUsersWithRolesAsync(page, pageSize, searchTerm);
+            ViewBag.SearchTerm = searchTerm;
             return View(model);
         }
         
@@ -335,6 +344,48 @@ namespace InfrastructureApp.Controllers
             if (result.Succeeded)
             {
                 TempData["SuccessMessage"] = "User deleted successfully.";
+                return RedirectToAction("Admin");
+            }
+
+            TempData["ErrorMessage"] = string.Join(" ", result.Errors.Select(e => e.Description));
+            return RedirectToAction("Admin");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BanUser(string userId, string reason)
+        {
+            if (string.IsNullOrWhiteSpace(reason))
+            {
+                TempData["ErrorMessage"] = "A reason for the ban is required.";
+                return RedirectToAction("Admin");
+            }
+
+            string currentAdminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _userService.BanUserAsync(userId, currentAdminId, reason);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "User banned successfully.";
+                return RedirectToAction("Admin");
+            }
+
+            TempData["ErrorMessage"] = string.Join(" ", result.Errors.Select(e => e.Description));
+            return RedirectToAction("Admin");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnbanUser(string userId)
+        {
+            string currentAdminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _userService.UnbanUserAsync(userId, currentAdminId);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "User unbanned successfully.";
                 return RedirectToAction("Admin");
             }
 

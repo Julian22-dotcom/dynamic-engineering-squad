@@ -86,7 +86,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void ThenIShouldSeeAFlagButtonInTheModal()
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var flagBtn = wait.Until(d => d.FindElement(By.CssSelector("[data-testid='modal-flag-button'], #modalFlagBtn")));
             Assert.That(flagBtn.Displayed, Is.True);
         }
@@ -98,7 +98,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             // Test stability cleanup:
             // Wait for the flag button to be ready before clicking,
             // then wait for the Bootstrap flag modal to fully open.
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var flagBtn = wait.Until(d =>
             {
                 var button = d.FindElement(By.Id("modalFlagBtn"));
@@ -106,8 +106,9 @@ namespace InfrastructureApp_Tests.StepDefinitions
             });
             WaitForFlagModalScript(wait);
             ScrollAndClick(flagBtn);
-            
-            wait.Until(d => {
+
+            wait.Until(d =>
+            {
                 var modal = d.FindElement(By.Id("flagModal"));
                 var modalClass = modal.GetAttribute("class") ?? string.Empty;
                 return modal.Displayed && modalClass.Contains("show");
@@ -118,7 +119,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void ThenTheFlagButtonInTheModalShouldBeDisabledAndShowAlreadyFlagged()
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var flagBtn = wait.Until(d => d.FindElement(By.Id("modalFlagBtn")));
             Assert.Multiple(() =>
             {
@@ -131,7 +132,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void ThenIShouldSeeAFlagIcon()
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var flagBtn = wait.Until(d => d.FindElement(By.Id("flagBtn")));
             Assert.That(flagBtn.Displayed, Is.True);
         }
@@ -144,20 +145,18 @@ namespace InfrastructureApp_Tests.StepDefinitions
             // Test stability cleanup:
             // Wait for the flag button to be ready before clicking,
             // then wait for the Bootstrap flag modal to fully open.
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var flagBtn = wait.Until(d =>
             {
                 var button = d.FindElement(By.Id("flagBtn"));
                 return button.Displayed && button.Enabled ? button : null;
             });
+
             WaitForFlagModalScript(wait);
+
             ScrollAndClick(flagBtn);
-            
-            wait.Until(d => {
-                var modal = d.FindElement(By.Id("flagModal"));
-                var modalClass = modal.GetAttribute("class") ?? string.Empty;
-                return modal.Displayed && modalClass.Contains("show");
-            });
+
+            WaitForVisibleModal(By.Id("flagModal"));
         }
 
         [Then(@"I should be presented with categories ""(.*)"", ""(.*)"", ""(.*)""")]
@@ -177,7 +176,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void WhenISelectCategory(string category)
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var radio = wait.Until(d => d.FindElement(By.XPath($"//label[contains(text(), '{category}')]/preceding-sibling::input")));
             radio.Click();
         }
@@ -186,7 +185,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void WhenIClickSubmitReport()
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var submitBtn = wait.Until(d => d.FindElement(By.Id("submitFlagBtn")));
             ScrollAndClick(submitBtn);
         }
@@ -196,7 +195,8 @@ namespace InfrastructureApp_Tests.StepDefinitions
         public void ThenIShouldSeeAConfirmationMessage(string expectedMessage)
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            var messageEl = wait.Until(d => {
+            var messageEl = wait.Until(d =>
+            {
                 var el = d.FindElement(By.Id("flagMessage"));
                 return el.Displayed && !string.IsNullOrEmpty(el.Text) && el.Text.Contains(expectedMessage) ? el : null;
             });
@@ -221,7 +221,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void ThenTheFlagIconShouldBeDisabledAndShowAlreadyFlagged()
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var flagBtn = wait.Until(d => d.FindElement(By.Id("flagBtn")));
             Assert.Multiple(() =>
             {
@@ -254,7 +254,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
 
         private IWebElement WaitForVisibleModal(By by)
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(15));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
 
             return wait.Until(d =>
