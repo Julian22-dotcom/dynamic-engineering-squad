@@ -13,7 +13,7 @@
     }
 
     const audioController = window.createMinigameAudio
-        ? window.createMinigameAudio({ src: "/audio/minigames/trivia-theme.mp3" })
+        ? window.createMinigameAudio({ src: "/audio/minigames/trivia-theme.mp3", label: "trivia-theme" })
         : null;
 
     if (muteButton && audioController) {

@@ -17,6 +17,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task Index_ReturnsViewResult_WithGameCards()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new MinigameViewModelFactory(serviceMock.Object);
             serviceMock
                 .Setup(service => service.GetTodayStatusesAsync("user-1", null))
                 .ReturnsAsync(new[]
@@ -30,7 +31,7 @@ namespace InfrastructureApp_Tests.Minigames
                 .Setup(service => service.GetCurrentPointsAsync("user-1"))
                 .ReturnsAsync(25);
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -56,6 +57,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task Matching_ReturnsViewResult_WithMatchingViewModel()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new MinigameViewModelFactory(serviceMock.Object);
             serviceMock
                 .Setup(service => service.GetTodayStatusesAsync("user-1", null))
                 .ReturnsAsync(new[]
@@ -66,7 +68,7 @@ namespace InfrastructureApp_Tests.Minigames
                 .Setup(service => service.GetCurrentPointsAsync("user-1"))
                 .ReturnsAsync(31);
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -87,6 +89,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task Trivia_ReturnsViewResult_WithTriviaViewModel()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new MinigameViewModelFactory(serviceMock.Object);
             serviceMock
                 .Setup(service => service.GetOrStartTriviaRoundAsync("user-1", null))
                 .ReturnsAsync(new TriviaQuestionPromptResult
@@ -112,7 +115,7 @@ namespace InfrastructureApp_Tests.Minigames
                     IsRoundComplete = false
                 });
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -131,6 +134,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task TapRepair_ReturnsViewResult_WithTapRepairViewModel()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new MinigameViewModelFactory(serviceMock.Object);
             serviceMock
                 .Setup(service => service.GetTodayStatusesAsync("user-1", null))
                 .ReturnsAsync(new[]
@@ -147,7 +151,7 @@ namespace InfrastructureApp_Tests.Minigames
                 .Setup(service => service.GetCurrentPointsAsync("user-1"))
                 .ReturnsAsync(19);
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -165,6 +169,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task SpinSlots_ReturnsJsonWithServerGeneratedSymbols()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new Mock<IMinigameViewModelFactory>();
             serviceMock
                 .Setup(service => service.SpinSlotsAsync("user-1", null))
                 .ReturnsAsync(new SlotsSpinResult
@@ -180,7 +185,7 @@ namespace InfrastructureApp_Tests.Minigames
                     ResultLabel = "Three of a Kind"
                 });
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -201,6 +206,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task SpinSlots_WhenDailyCapReached_ReturnsNoAdditionalPoints()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new Mock<IMinigameViewModelFactory>();
             serviceMock
                 .Setup(service => service.SpinSlotsAsync("user-1", null))
                 .ReturnsAsync(new SlotsSpinResult
@@ -216,7 +222,7 @@ namespace InfrastructureApp_Tests.Minigames
                     ResultLabel = "Road Crew Spin"
                 });
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -232,7 +238,8 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task CompleteGame_WithInvalidGameKey_ReturnsBadRequest()
         {
             var serviceMock = new Mock<IMinigameService>();
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var factory = new Mock<IMinigameViewModelFactory>();
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -249,7 +256,8 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task CompleteGame_WithSlotsGameKey_ReturnsBadRequest()
         {
             var serviceMock = new Mock<IMinigameService>();
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var factory = new Mock<IMinigameViewModelFactory>();
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -266,6 +274,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task CompleteGame_ForMatching_ReturnsCompletionPayload()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new Mock<IMinigameViewModelFactory>();
             serviceMock
                 .Setup(service => service.CompleteGameAsync("user-1", MinigameConstants.MatchingGameKey, null))
                 .ReturnsAsync(new MinigameAwardResult
@@ -278,7 +287,7 @@ namespace InfrastructureApp_Tests.Minigames
                     HasReachedDailyLimit = false
                 });
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -300,6 +309,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task CompleteGame_ForTapRepair_ReturnsCompletionPayload()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new Mock<IMinigameViewModelFactory>();
             serviceMock
                 .Setup(service => service.CompleteGameAsync("user-1", MinigameConstants.TapRepairGameKey, null))
                 .ReturnsAsync(new MinigameAwardResult
@@ -312,7 +322,7 @@ namespace InfrastructureApp_Tests.Minigames
                     HasReachedDailyLimit = false
                 });
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -334,11 +344,12 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task SubmitTrivia_WithInvalidPayload_ReturnsBadRequest()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new Mock<IMinigameViewModelFactory>();
             serviceMock
                 .Setup(service => service.SubmitTriviaAnswerAsync("user-1", It.IsAny<TriviaAnswerSubmission>(), null))
                 .ThrowsAsync(new ArgumentException("Trivia answer is incomplete."));
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -352,6 +363,7 @@ namespace InfrastructureApp_Tests.Minigames
         public async Task SubmitTrivia_ReturnsTriviaResultPayload()
         {
             var serviceMock = new Mock<IMinigameService>();
+            var factory = new MinigameViewModelFactory(serviceMock.Object);
             serviceMock
                 .Setup(service => service.SubmitTriviaAnswerAsync(
                     "user-1",
@@ -381,7 +393,7 @@ namespace InfrastructureApp_Tests.Minigames
                     }
                 });
 
-            var controller = new MinigamesController(serviceMock.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
             {
                 ControllerContext = BuildControllerContext("user-1")
             };

@@ -11,7 +11,7 @@
     }
 
     const audioController = window.createMinigameAudio
-        ? window.createMinigameAudio({ src: "/audio/minigames/slots-theme.mp3" })
+        ? window.createMinigameAudio({ src: "/audio/minigames/slots-theme.mp3", label: "slots-theme" })
         : null;
 
     spinButton.addEventListener("click", async function () {

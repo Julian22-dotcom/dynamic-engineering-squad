@@ -29,6 +29,9 @@ namespace InfrastructureApp.Models
         //FK to ApsNetUser.Id (nvarchar(450))
         public string UserId { get; set; } = "";
 
+        [ForeignKey(nameof(UserId))]
+        public Users? User { get; set; }
+
         //DECIMAL(9,6)
         //[Required(ErrorMessage = "Please select a location on the map to populate Latitude.")]   //for testing
         [Range(-90, 90, ErrorMessage = "Latitude must be between -90 and 90.")]

@@ -14,7 +14,7 @@
     }
 
     const audioController = window.createMinigameAudio
-        ? window.createMinigameAudio({ src: "/audio/minigames/tap-repair-theme.mp3" })
+        ? window.createMinigameAudio({ src: "/audio/minigames/tap-repair-theme.mp3", label: "tap-repair-theme" })
         : null;
 
     const durationSeconds = Number.parseInt(arena.dataset.durationSeconds || "20", 10);

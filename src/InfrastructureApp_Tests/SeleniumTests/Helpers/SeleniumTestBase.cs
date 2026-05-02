@@ -17,9 +17,9 @@ using InfrastructureApp.Services.ReportAssist;
 using InfrastructureApp.Services.ImageSeverity;
 using InfrastructureApp_Tests.TestDoubles;
 
-
 namespace InfrastructureApp_Tests.SeleniumTests.Helpers
 {
+    [NonParallelizable]
     public abstract class SeleniumTestBase
     {
         protected static IWebDriver Driver = null!;
@@ -38,7 +38,7 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
                 SqliteConnection = new SqliteConnection("DataSource=:memory:");
                 SqliteConnection.Open();
 
-                var contentRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "InfrastructureApp"));
+                var contentRoot = FindInfrastructureAppContentRoot();
                 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
                 {
                     Args = new string[] { "--environment", "Testing" },
@@ -126,10 +126,11 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
         public async Task SetUpDriver()
         {
             var options = new ChromeOptions();
-            options.AddArgument("--headless");
+            options.AddArgument("--headless=new");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-dev-shm-usage");
-            options.AddArgument("--window-size=1280,900");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--window-size=1920,1080");
 
             Driver = new ChromeDriver(options);
             Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
@@ -213,6 +214,25 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
             Driver.FindElement(By.CssSelector("input[type='submit']")).Click();
 
             wait.Until(d => !d.Url.Contains("/Account/Login"));
+        }
+
+        private static string FindInfrastructureAppContentRoot()
+        {
+            var current = new DirectoryInfo(AppContext.BaseDirectory);
+
+            while (current != null)
+            {
+                var candidate = Path.Combine(current.FullName, "src", "InfrastructureApp");
+                if (Directory.Exists(candidate))
+                {
+                    return candidate;
+                }
+
+                current = current.Parent;
+            }
+
+            throw new DirectoryNotFoundException(
+                $"Could not locate the InfrastructureApp content root from '{AppContext.BaseDirectory}'.");
         }
     }
 }

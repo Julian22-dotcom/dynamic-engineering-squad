@@ -1,6 +1,7 @@
 using InfrastructureApp.Data;
 using InfrastructureApp.Models;
 using InfrastructureApp_Tests.Account;
+using InfrastructureApp_Tests.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -77,17 +78,11 @@ public class SocialSharingSteps : IDisposable
     {
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        var report = new ReportIssue
-        {
-            Description = description,
-            Status = status,
-            UserId = "test-user-id",
-            CreatedAt = DateTime.UtcNow
-        };
-
-        db.ReportIssue.Add(report);
-        await db.SaveChangesAsync();
+        var report = await ReportIssueTestDataHelper.CreateTestReportAsync(
+            db,
+            description,
+            status,
+            "test-user-id");
         return report.Id;
     }
 
@@ -109,6 +104,7 @@ public class SocialSharingSteps : IDisposable
     public async Task WhenAnAuthenticatedUserNavigatesToTheSharingReportDetailsPage()
     {
         _response = await _authClient.GetAsync($"/ReportIssue/Details/{_authReportId}");
+        TestContext.WriteLine($"GET /ReportIssue/Details/{_authReportId} => {(int)_response.StatusCode} {_response.StatusCode}");
         _html = await _response.Content.ReadAsStringAsync();
     }
 
@@ -116,18 +112,21 @@ public class SocialSharingSteps : IDisposable
     public async Task WhenAnUnauthenticatedUserNavigatesToTheSharingReportDetailsPage()
     {
         _response = await _unauthClient.GetAsync($"/ReportIssue/Details/{_unauthReportId}");
+        TestContext.WriteLine($"GET /ReportIssue/Details/{_unauthReportId} => {(int)_response.StatusCode} {_response.StatusCode}");
         _html = await _response.Content.ReadAsStringAsync();
     }
 
     [Then("the sharing page should contain {string}")]
     public void ThenTheSharingPageShouldContain(string expected)
     {
+        Assert.That(_response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK), $"Unexpected status code before asserting page content. Body: {_html}");
         Assert.That(_html, Does.Contain(expected));
     }
 
     [Then("the sharing page should not contain {string}")]
     public void ThenTheSharingPageShouldNotContain(string unexpected)
     {
+        Assert.That(_response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK), $"Unexpected status code before asserting page content. Body: {_html}");
         Assert.That(_html, Does.Not.Contain(unexpected));
     }
 

@@ -93,3 +93,13 @@ A two-layer moderation approach:
     3.  Verify via CI gatekeeper on the `upstream/dev` PR.
     *   *Note:* There is no staging environment; local and CI verification are the final gates.
 
+---
+
+## 10. Temp Files
+* Do not create temp, build, or scratch folders in the project root.
+* All generated files must go into appropriate directories:
+    1. wwwroot/js for scripts
+    2. wwwroot/css for styles
+    3. Views for Razor pages
+    4. Services/Controllers for backend logic
+

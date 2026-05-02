@@ -8,6 +8,11 @@
 @model InfrastructureApp.Models.ReportIssue
 @{
     ViewData["Title"] = "Report Submitted";
+    var reporterDisplay = !string.IsNullOrWhiteSpace(Model.User?.UserName)
+        ? Model.User!.UserName
+        : !string.IsNullOrWhiteSpace(Model.User?.Email)
+            ? Model.User!.Email
+            : "Unknown user";
 
     if (Model.Status == "Approved")
     {
@@ -69,6 +74,7 @@
             </p>
         }
         <p><strong>Created:</strong> @Model.CreatedAt</p>
+        <p><strong>Reported by:</strong> @reporterDisplay</p>
         <p>
             <strong>Description:</strong><br />
             <span class="report-text-wrap text-break">@Model.Description</span>
@@ -203,8 +209,12 @@
     <div class="mt-3">
         @if (User.Identity?.IsAuthenticated == true)
         {
-            <button id="flagBtn"
+            <button type="button"
+                    id="flagBtn"
                     data-testid="flag-button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#flagModal"
+                    aria-controls="flagModal"
                     onclick="window.showFlagModalFromButton?.(this)"
                     class="btn @(ViewBag.UserHasFlagged ? "btn-secondary" : "btn-outline-danger") fw-bold"
                     data-report-id="@Model.Id"
@@ -264,6 +274,8 @@
 
 <!-- Canvas is OUTSIDE the container so viewport units work correctly -->
 <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;display:none;"></canvas>
+
+<partial name="_FlagReportModal" />
 
 @section Scripts {
     @Html.AntiForgeryToken()

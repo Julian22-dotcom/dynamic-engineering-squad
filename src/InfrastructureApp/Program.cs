@@ -68,6 +68,7 @@ builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepositoryEf>();
 builder.Services.AddScoped<LeaderboardService>();
 builder.Services.AddScoped<IPointsShopService, PointsShopService>();
 builder.Services.AddScoped<IMinigameService, MinigameService>();
+builder.Services.AddScoped<IMinigameViewModelFactory, MinigameViewModelFactory>();
 
 // Added Repository DI (Dependency Injection) for ReportIssueRepositoryEf
 //dependency injection configuration. They tell the application what concrete classes to use whenever an interface is requested.

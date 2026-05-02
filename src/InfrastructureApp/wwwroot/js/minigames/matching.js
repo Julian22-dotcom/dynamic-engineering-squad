@@ -20,7 +20,7 @@
     ];
 
     const audioController = window.createMinigameAudio
-        ? window.createMinigameAudio({ src: "/audio/minigames/matching-theme.mp3" })
+        ? window.createMinigameAudio({ src: "/audio/minigames/matching-theme.mp3", label: "matching-theme" })
         : null;
 
     let cards = [];

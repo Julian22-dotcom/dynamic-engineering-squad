@@ -1,3 +1,4 @@
+//implements an ISession so you don't need a real http session. 
 using Microsoft.AspNetCore.Http;
 
 namespace InfrastructureApp_Tests.Minigames

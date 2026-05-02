@@ -169,6 +169,11 @@ namespace InfrastructureApp.Data
                     .HasMaxLength(450)
                     .IsRequired();
 
+                entity.HasOne(r => r.User)
+                    .WithMany()
+                    .HasForeignKey(r => r.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
                 entity.Property(r => r.Latitude)
                     .HasColumnType("decimal(9,6)");
 
