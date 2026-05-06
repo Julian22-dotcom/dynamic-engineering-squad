@@ -18,15 +18,32 @@
     {
         var issueUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/ReportIssue/Details/{Model.Id}";
         ViewData["OgUrl"] = issueUrl;
-        ViewData["OgTitle"] = "Infrastructure Issue on PatchNotes";
-        ViewData["OgDescription"] = Model.Description;
-        if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+
+        var titleSnippet = Model.Description.Length > 100
+            ? Model.Description.Substring(0, 100).TrimEnd() + "..."
+            : Model.Description;
+        ViewData["OgTitle"] = $"PatchNotes: {titleSnippet}";
+
+        ViewData["OgDescription"] = Model.Description.Length > 200
+            ? Model.Description.Substring(0, 200).TrimEnd() + "..."
+            : Model.Description;
+
+        string ogImageUrl;
+        if (!string.IsNullOrWhiteSpace(Model.ImageUrl)
+            && (Model.ImageUrl.StartsWith("http://") || Model.ImageUrl.StartsWith("https://")))
         {
-            var imgUrl = Model.ImageUrl.StartsWith("/")
-                ? $"{Context.Request.Scheme}://{Context.Request.Host}{Model.ImageUrl}"
-                : Model.ImageUrl;
-            ViewData["OgImage"] = imgUrl;
+            ogImageUrl = Model.ImageUrl;
         }
+        else if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            var path = Model.ImageUrl.StartsWith("/") ? Model.ImageUrl : "/" + Model.ImageUrl;
+            ogImageUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{path}";
+        }
+        else
+        {
+            ogImageUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/Images/traffic-cone.png";
+        }
+        ViewData["OgImage"] = ogImageUrl;
     }
 }
 
