@@ -1,4 +1,5 @@
 using InfrastructureApp.Models;
+using InfrastructureApp.Services;
 using InfrastructureApp.Services.Minigames;
 using InfrastructureApp.ViewModels.Minigames;
 using Microsoft.AspNetCore.Authorization;
