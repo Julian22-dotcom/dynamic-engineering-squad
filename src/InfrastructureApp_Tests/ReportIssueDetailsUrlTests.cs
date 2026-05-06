@@ -40,7 +40,8 @@ namespace InfrastructureApp_Tests
 
             // SCRUM-101
             // Initialize the controller used to test the Details URL behavior.
-            _controller = new ReportIssueController(_service, userManager, voteService, verifyFixService, flagService)
+            var issueNameService = Substitute.For<IIssueNameService>();
+            _controller = new ReportIssueController(_service, userManager, voteService, verifyFixService, flagService, issueNameService)
             {
                 ControllerContext = new ControllerContext
                 {
