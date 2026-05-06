@@ -98,7 +98,7 @@ describe("trivia.js", () => {
         form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
 
         expect(document.getElementById("triviaSubmitButton").disabled).toBe(true);
-        expect(audioController.play).toHaveBeenCalledTimes(1);
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(1);
         expect(fetch).toHaveBeenCalledWith("/Minigames/SubmitTrivia", {
             method: "POST",
             headers: {
@@ -112,6 +112,64 @@ describe("trivia.js", () => {
         });
 
         await flushPromises();
+    });
+
+    test("later trivia submissions do not stop or restart music while under the daily limit", async () => {
+        buildDOM(radioQuestion());
+        global.fetch
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    currentPoints: 5,
+                    correctAnswers: 1,
+                    correctAnswersToWin: 10,
+                    dailyPointsEarned: 1,
+                    dailyPointsLimit: 5,
+                    hasReachedDailyLimit: false,
+                    wasCorrect: true,
+                    awardedPoints: 0,
+                    isRoundComplete: false,
+                    nextQuestion: {
+                        questionId: "q2",
+                        prompt: "Next?",
+                        questionType: "radio",
+                        options: [{ optionKey: "x", label: "X" }]
+                    }
+                })
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    currentPoints: 5,
+                    correctAnswers: 2,
+                    correctAnswersToWin: 10,
+                    dailyPointsEarned: 2,
+                    dailyPointsLimit: 5,
+                    hasReachedDailyLimit: false,
+                    wasCorrect: true,
+                    awardedPoints: 0,
+                    isRoundComplete: false,
+                    nextQuestion: {
+                        questionId: "q3",
+                        prompt: "Next after next?",
+                        questionType: "radio",
+                        options: [{ optionKey: "z", label: "Z" }]
+                    }
+                })
+            });
+
+        loadScript("trivia.js");
+
+        document.getElementById("q1-a").checked = true;
+        document.getElementById("triviaForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        await flushPromises();
+
+        document.getElementById("q2-x").checked = true;
+        document.getElementById("triviaForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        await flushPromises();
+
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(2);
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("correct answer updates progress and shows success message", async () => {
@@ -305,6 +363,39 @@ describe("trivia.js", () => {
         expect(document.getElementById("triviaForm").dataset.isComplete).toBe("true");
         expect(document.getElementById("triviaQuestionHost").textContent).toContain("Round complete");
         expect(document.getElementById("triviaSubmitButton").disabled).toBe(true);
+        expect(audioController.stop).toHaveBeenCalledTimes(1);
+    });
+
+    test("reaching the daily limit stops trivia music immediately", async () => {
+        buildDOM(radioQuestion());
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({
+                currentPoints: 10,
+                correctAnswers: 10,
+                correctAnswersToWin: 10,
+                dailyPointsEarned: 5,
+                dailyPointsLimit: 5,
+                hasReachedDailyLimit: true,
+                wasCorrect: true,
+                awardedPoints: 5,
+                isRoundComplete: false,
+                nextQuestion: {
+                    questionId: "q2",
+                    prompt: "Unused next?",
+                    questionType: "radio",
+                    options: [{ optionKey: "x", label: "X" }]
+                }
+            })
+        });
+
+        loadScript("trivia.js");
+        document.getElementById("q1-a").checked = true;
+        document.getElementById("triviaForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        await flushPromises();
+
+        expect(document.getElementById("triviaDailyProgress").textContent).toBe("5 / 5");
+        expect(audioController.stop).toHaveBeenCalledTimes(1);
     });
 
     test("if form is already complete submit does nothing", () => {
@@ -316,6 +407,33 @@ describe("trivia.js", () => {
         document.getElementById("triviaForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
 
         expect(fetch).not.toHaveBeenCalled();
+    });
+
+    test("daily limit on page load prevents trivia music from starting", async () => {
+        buildDOM(radioQuestion());
+        document.getElementById("triviaDailyProgress").textContent = "5 / 5";
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({
+                currentPoints: 10,
+                correctAnswers: 10,
+                correctAnswersToWin: 10,
+                dailyPointsEarned: 5,
+                dailyPointsLimit: 5,
+                hasReachedDailyLimit: true,
+                wasCorrect: true,
+                awardedPoints: 5,
+                isRoundComplete: true,
+                nextQuestion: null
+            })
+        });
+        loadScript("trivia.js");
+
+        document.getElementById("q1-a").checked = true;
+        document.getElementById("triviaForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        await flushPromises();
+
+        expect(audioController.playIfNeeded).not.toHaveBeenCalled();
     });
 
     test("401 redirects to login", async () => {

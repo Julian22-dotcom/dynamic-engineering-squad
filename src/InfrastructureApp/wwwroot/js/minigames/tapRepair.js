@@ -27,6 +27,7 @@
     let spawnIntervalId = null;
     let countdownIntervalId = null;
     let completionSubmitted = false;
+    let hasReachedDailyLimit = getHasReachedDailyLimit();
 
     startButton.addEventListener("click", startRound);
 
@@ -51,8 +52,12 @@
         resultElement.textContent = "Round in progress. Potholes are spawning fast. Repair as many as you can before time runs out.";
         startButton.disabled = true;
 
-        if (audioController) {
-            audioController.play();
+        if (audioController && !hasReachedDailyLimit) {
+            if (typeof audioController.playIfNeeded === "function") {
+                audioController.playIfNeeded();
+            } else {
+                audioController.play();
+            }
         }
 
         removeOverlay();
@@ -159,6 +164,8 @@
             const data = await response.json();
             currentPointsElement.textContent = data.currentPoints;
             dailyProgressElement.textContent = `${data.dailyPointsEarned} / ${data.dailyPointsLimit}`;
+            hasReachedDailyLimit = data.hasReachedDailyLimit === true
+                || data.dailyPointsEarned >= data.dailyPointsLimit;
 
             if (data.awardedPoints > 0) {
                 resultElement.className = "alert alert-success mb-3";
@@ -167,16 +174,16 @@
                 resultElement.className = "alert alert-warning mb-3";
                 resultElement.textContent = `Round complete. You repaired ${score} potholes, but today's 5-point Tap Repair limit was already reached.`;
             }
+
+            if (hasReachedDailyLimit && audioController) {
+                audioController.stop();
+            }
         } catch (error) {
             console.error(error);
             completionSubmitted = false;
             resultElement.className = "alert alert-danger mb-3";
             resultElement.textContent = "The round finished, but the reward could not be verified right now.";
         } finally {
-            if (audioController) {
-                audioController.stop();
-            }
-
             showOverlay("Repair Crew Reset", "Start another round whenever you're ready.");
         }
     }
@@ -233,6 +240,16 @@
     function getAntiForgeryToken() {
         const field = document.querySelector('input[name="__RequestVerificationToken"]');
         return field ? field.value : "";
+    }
+
+    function getHasReachedDailyLimit() {
+        const progressText = dailyProgressElement.textContent || "";
+        const match = progressText.match(/(\d+)\s*\/\s*(\d+)/);
+        if (!match) {
+            return false;
+        }
+
+        return Number(match[1]) >= Number(match[2]);
     }
 
     window.addEventListener("beforeunload", function () {
