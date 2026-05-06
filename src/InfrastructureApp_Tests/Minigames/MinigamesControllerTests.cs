@@ -30,8 +30,9 @@ namespace InfrastructureApp_Tests.Minigames
             serviceMock
                 .Setup(service => service.GetCurrentPointsAsync("user-1"))
                 .ReturnsAsync(25);
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -67,8 +68,9 @@ namespace InfrastructureApp_Tests.Minigames
             serviceMock
                 .Setup(service => service.GetCurrentPointsAsync("user-1"))
                 .ReturnsAsync(31);
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -114,8 +116,9 @@ namespace InfrastructureApp_Tests.Minigames
                     HasReachedDailyLimit = false,
                     IsRoundComplete = false
                 });
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -150,8 +153,9 @@ namespace InfrastructureApp_Tests.Minigames
             serviceMock
                 .Setup(service => service.GetCurrentPointsAsync("user-1"))
                 .ReturnsAsync(19);
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -184,8 +188,9 @@ namespace InfrastructureApp_Tests.Minigames
                     IsWinningSpin = true,
                     ResultLabel = "Three of a Kind"
                 });
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -221,8 +226,9 @@ namespace InfrastructureApp_Tests.Minigames
                     IsWinningSpin = false,
                     ResultLabel = "Road Crew Spin"
                 });
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -239,7 +245,8 @@ namespace InfrastructureApp_Tests.Minigames
         {
             var serviceMock = new Mock<IMinigameService>();
             var factory = new Mock<IMinigameViewModelFactory>();
-            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -257,7 +264,8 @@ namespace InfrastructureApp_Tests.Minigames
         {
             var serviceMock = new Mock<IMinigameService>();
             var factory = new Mock<IMinigameViewModelFactory>();
-            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -286,8 +294,9 @@ namespace InfrastructureApp_Tests.Minigames
                     DailyPointsLimit = 5,
                     HasReachedDailyLimit = false
                 });
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -321,8 +330,9 @@ namespace InfrastructureApp_Tests.Minigames
                     DailyPointsLimit = 5,
                     HasReachedDailyLimit = false
                 });
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
 
-            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -345,11 +355,12 @@ namespace InfrastructureApp_Tests.Minigames
         {
             var serviceMock = new Mock<IMinigameService>();
             var factory = new Mock<IMinigameViewModelFactory>();
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
             serviceMock
                 .Setup(service => service.SubmitTriviaAnswerAsync("user-1", It.IsAny<TriviaAnswerSubmission>(), null))
                 .ThrowsAsync(new ArgumentException("Trivia answer is incomplete."));
 
-            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory.Object, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };
@@ -364,6 +375,7 @@ namespace InfrastructureApp_Tests.Minigames
         {
             var serviceMock = new Mock<IMinigameService>();
             var factory = new MinigameViewModelFactory(serviceMock.Object);
+            var auditLogService = new Mock<InfrastructureApp.Services.IAuditLogService>();
             serviceMock
                 .Setup(service => service.SubmitTriviaAnswerAsync(
                     "user-1",
@@ -393,7 +405,7 @@ namespace InfrastructureApp_Tests.Minigames
                     }
                 });
 
-            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager())
+            var controller = new MinigamesController(serviceMock.Object, factory, CreateUserManager(), auditLogService.Object)
             {
                 ControllerContext = BuildControllerContext("user-1")
             };

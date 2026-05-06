@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using InfrastructureApp.Models;
 using InfrastructureApp.Services;
 using InfrastructureApp.Data;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace InfrastructureApp_Tests.Services;
@@ -42,7 +43,7 @@ public class UserSearchTests
 
         await _context.Database.EnsureCreatedAsync();
 
-        _userService = new UserService(_userManager, _roleManager, _context);
+        _userService = new UserService(_userManager, _roleManager, _context, Substitute.For<IAuditLogService>());
 
         // Seed users
         await _userManager.CreateAsync(new Users { UserName = "alice", Email = "alice@test.com" });
