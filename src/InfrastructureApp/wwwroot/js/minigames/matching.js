@@ -1,4 +1,13 @@
 (function () {
+    const symbols = [
+        { key: "pothole", label: "Pothole", imageSrc: "/Images/minigames/symbols/pothole.svg", imageAlt: "Pothole" },
+        { key: "cone", label: "Traffic cone", imageSrc: "/Images/minigames/symbols/cone.svg", imageAlt: "Traffic cone" },
+        { key: "bridge", label: "Bridge", imageSrc: "/Images/minigames/symbols/bridge.svg", imageAlt: "Bridge" },
+        { key: "traffic-light", label: "Traffic Light", imageSrc: "/Images/minigames/symbols/traffic-light.svg", imageAlt: "Traffic light" },
+        { key: "road-sign", label: "Road Sign", imageSrc: "/Images/minigames/symbols/road-sign.svg", imageAlt: "Road sign" },
+        { key: "crosswalk", label: "Crosswalk", imageSrc: "/Images/minigames/symbols/crosswalk.svg", imageAlt: "Crosswalk" }
+    ];
+
     const board = document.getElementById("matchingBoard");
     const resultElement = document.getElementById("matchingResult");
     const restartButton = document.getElementById("matchingRestartButton");
@@ -9,15 +18,6 @@
     if (!board || !resultElement || !restartButton || !currentPointsElement || !dailyProgressElement) {
         return;
     }
-
-    const symbols = [
-        { key: "pothole", label: "Pothole" },
-        { key: "cone", label: "Cone" },
-        { key: "bridge", label: "Bridge" },
-        { key: "traffic-light", label: "Traffic Light" },
-        { key: "road-sign", label: "Road Sign" },
-        { key: "crosswalk", label: "Crosswalk" }
-    ];
 
     const audioController = window.createMinigameAudio
         ? window.createMinigameAudio({ src: "/audio/minigames/matching-theme.mp3", label: "matching-theme" })
@@ -53,8 +53,8 @@
         cards = shuffle(
             symbols.flatMap(function (symbol) {
                 return [
-                    { id: `${symbol.key}-a`, key: symbol.key, label: symbol.label },
-                    { id: `${symbol.key}-b`, key: symbol.key, label: symbol.label }
+                    { id: `${symbol.key}-a`, key: symbol.key, label: symbol.label, imageSrc: symbol.imageSrc, imageAlt: symbol.imageAlt },
+                    { id: `${symbol.key}-b`, key: symbol.key, label: symbol.label, imageSrc: symbol.imageSrc, imageAlt: symbol.imageAlt }
                 ];
             })
         );
@@ -82,12 +82,20 @@
 
         const back = document.createElement("span");
         back.className = "matching-card-face matching-card-face-back";
-        back.textContent = card.label;
+        back.appendChild(createCardImage(card));
 
         button.appendChild(front);
         button.appendChild(back);
         button.addEventListener("click", onCardClicked);
         return button;
+    }
+
+    function createCardImage(card) {
+        const image = document.createElement("img");
+        image.className = "matching-card-image";
+        image.src = card.imageSrc;
+        image.alt = card.imageAlt;
+        return image;
     }
 
     function onCardClicked(event) {

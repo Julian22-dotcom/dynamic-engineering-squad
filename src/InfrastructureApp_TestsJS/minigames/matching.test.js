@@ -53,6 +53,18 @@ describe("matching.js", () => {
         loadScript("matching.js");
 
         expect(getCards()).toHaveLength(12);
+        const revealedImages = getCards().map((card) => card.querySelector(".matching-card-face-back img"));
+        expect(revealedImages.every((image) => image instanceof HTMLImageElement)).toBe(true);
+    });
+
+    test("revealed cards use image assets with alt text", () => {
+        buildDOM();
+        loadScript("matching.js");
+
+        const firstCardImage = getCards()[0].querySelector(".matching-card-face-back img");
+        expect(firstCardImage).not.toBeNull();
+        expect(firstCardImage.getAttribute("src")).toContain("/Images/minigames/symbols/");
+        expect(firstCardImage.getAttribute("alt")).not.toBe("");
     });
 
     test("clicking a card flips it and clicking it again does nothing", () => {

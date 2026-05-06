@@ -75,7 +75,13 @@ describe("slots.js", () => {
         await flushPromises();
 
         const reels = [...document.querySelectorAll("[data-slot-reel]")];
-        expect(reels.map((reel) => reel.textContent)).toEqual(["Pothole", "Road Sign", "Traffic Light"]);
+        const reelImages = reels.map((reel) => reel.querySelector("img"));
+        expect(reelImages.map((image) => image.alt)).toEqual(["Pothole", "Road sign", "Traffic light"]);
+        expect(reelImages.map((image) => image.getAttribute("src"))).toEqual([
+            "/Images/minigames/symbols/pothole.svg",
+            "/Images/minigames/symbols/road-sign.svg",
+            "/Images/minigames/symbols/traffic-light.svg"
+        ]);
         expect(document.getElementById("slotsCurrentPoints").textContent).toBe("7");
         expect(document.getElementById("slotsDailyProgress").textContent).toBe("2 / 5");
         expect(document.getElementById("slotsResult").textContent).toContain("No match this spin");

@@ -1,4 +1,12 @@
 (function () {
+    const symbolAssets = {
+        pothole: { alt: "Pothole", src: "/Images/minigames/symbols/pothole.svg" },
+        cone: { alt: "Traffic cone", src: "/Images/minigames/symbols/cone.svg" },
+        "road-sign": { alt: "Road sign", src: "/Images/minigames/symbols/road-sign.svg" },
+        "traffic-light": { alt: "Traffic light", src: "/Images/minigames/symbols/traffic-light.svg" },
+        bridge: { alt: "Bridge", src: "/Images/minigames/symbols/bridge.svg" }
+    };
+
     const spinButton = document.getElementById("slotsSpinButton");
     const muteButton = document.getElementById("slotsMuteButton");
     const resultElement = document.getElementById("slotsResult");
@@ -69,7 +77,7 @@
     function renderSymbols(symbols) {
         reelElements.forEach(function (reel, index) {
             const symbol = symbols[index] || "?";
-            reel.textContent = toDisplaySymbol(symbol);
+            reel.replaceChildren(createReelContent(symbol));
         });
     }
 
@@ -90,21 +98,20 @@
         resultElement.textContent = "No match this spin. Try again.";
     }
 
-    function toDisplaySymbol(symbol) {
-        switch (symbol) {
-            case "pothole":
-                return "Pothole";
-            case "cone":
-                return "Cone";
-            case "road-sign":
-                return "Road Sign";
-            case "traffic-light":
-                return "Traffic Light";
-            case "bridge":
-                return "Bridge";
-            default:
-                return symbol;
+    function createReelContent(symbol) {
+        const asset = symbolAssets[symbol];
+        if (!asset) {
+            const fallback = document.createElement("span");
+            fallback.className = "slots-reel-placeholder";
+            fallback.textContent = symbol;
+            return fallback;
         }
+
+        const image = document.createElement("img");
+        image.className = "slots-symbol-image";
+        image.src = asset.src;
+        image.alt = asset.alt;
+        return image;
     }
 
     function getAntiForgeryToken() {
