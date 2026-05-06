@@ -28,6 +28,7 @@
     let matchedPairs = 0;
     let lockBoard = false;
     let completionSubmitted = false;
+    let hasReachedDailyLimit = getHasReachedDailyLimit();
 
     restartButton.addEventListener("click", initializeBoard);
 
@@ -45,10 +46,6 @@
         flippedCards = [];
         lockBoard = false;
         completionSubmitted = false;
-
-        if (audioController) {
-            audioController.stop();
-        }
 
         cards = shuffle(
             symbols.flatMap(function (symbol) {
@@ -108,8 +105,12 @@
             return;
         }
 
-        if (audioController) {
-            audioController.play();
+        if (audioController && !hasReachedDailyLimit) {
+            if (typeof audioController.playIfNeeded === "function") {
+                audioController.playIfNeeded();
+            } else {
+                audioController.play();
+            }
         }
 
         cardElement.classList.add("is-flipped");
@@ -175,6 +176,8 @@
             const data = await response.json();
             currentPointsElement.textContent = data.currentPoints;
             dailyProgressElement.textContent = `${data.dailyPointsEarned} / ${data.dailyPointsLimit}`;
+            hasReachedDailyLimit = data.hasReachedDailyLimit === true
+                || data.dailyPointsEarned >= data.dailyPointsLimit;
 
             if (data.awardedPoints > 0) {
                 resultElement.className = "alert alert-success mb-3";
@@ -183,16 +186,26 @@
                 resultElement.className = "alert alert-warning mb-3";
                 resultElement.textContent = "Board cleared. Today's 5-point matching limit has already been reached.";
             }
+
+            if (hasReachedDailyLimit && audioController) {
+                audioController.stop();
+            }
         } catch (error) {
             console.error(error);
             completionSubmitted = false;
             resultElement.className = "alert alert-danger mb-3";
             resultElement.textContent = "The matching game completed, but the reward could not be verified right now.";
-        } finally {
-            if (audioController) {
-                audioController.stop();
-            }
         }
+    }
+
+    function getHasReachedDailyLimit() {
+        const progressText = dailyProgressElement.textContent || "";
+        const match = progressText.match(/(\d+)\s*\/\s*(\d+)/);
+        if (!match) {
+            return false;
+        }
+
+        return Number(match[1]) >= Number(match[2]);
     }
 
     function getAntiForgeryToken() {
