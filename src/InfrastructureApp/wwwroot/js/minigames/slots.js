@@ -21,12 +21,20 @@
     const audioController = window.createMinigameAudio
         ? window.createMinigameAudio({ src: "/audio/minigames/slots-theme.mp3", label: "slots-theme" })
         : null;
+    let hasStartedMusic = false;
+    let hasReachedDailyLimit = spinButton.disabled;
 
     spinButton.addEventListener("click", async function () {
         spinButton.disabled = true;
 
-        if (audioController) {
-            audioController.play();
+        if (audioController && !hasReachedDailyLimit) {
+            if (typeof audioController.playIfNeeded === "function") {
+                audioController.playIfNeeded();
+            } else if (!hasStartedMusic) {
+                audioController.play();
+            }
+
+            hasStartedMusic = true;
         }
 
         try {
@@ -51,8 +59,14 @@
             renderResult(data);
             currentPointsElement.textContent = data.currentPoints;
             dailyProgressElement.textContent = `${data.dailyPointsEarned} / ${data.dailyPointsLimit}`;
+            hasReachedDailyLimit = data.hasReachedDailyLimit === true;
 
-            if (!data.hasReachedDailyLimit) {
+            if (hasReachedDailyLimit && audioController) {
+                audioController.stop();
+                hasStartedMusic = false;
+            }
+
+            if (!hasReachedDailyLimit) {
                 spinButton.disabled = false;
             }
         } catch (error) {
@@ -60,10 +74,6 @@
             resultElement.className = "alert alert-danger mb-3";
             resultElement.textContent = "The slot spin could not be completed right now.";
             spinButton.disabled = false;
-        } finally {
-            if (audioController) {
-                audioController.stop();
-            }
         }
     });
 
