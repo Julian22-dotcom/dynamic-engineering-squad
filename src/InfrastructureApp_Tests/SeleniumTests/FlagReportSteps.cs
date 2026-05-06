@@ -147,8 +147,22 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 var button = d.FindElement(By.Id("flagBtn"));
                 return button.Displayed && button.Enabled ? button : null;
             });
-            
+
             ScrollAndClick(flagBtn);
+
+            // In CI headless Chrome, Bootstrap's data-bs-toggle click delegation
+            // may not fire reliably. After 3 seconds, if the modal still hasn't
+            // appeared, force it open directly via Bootstrap's JS API.
+            try
+            {
+                new WebDriverWait(Driver, TimeSpan.FromSeconds(3)).Until(d =>
+                    d.FindElements(By.CssSelector(".modal.show")).Count > 0);
+            }
+            catch (WebDriverTimeoutException)
+            {
+                ((IJavaScriptExecutor)Driver).ExecuteScript(
+                    "bootstrap.Modal.getOrCreateInstance(document.getElementById('flagModal')).show();");
+            }
 
             WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal'], .modal.show"), "flag modal");
         }

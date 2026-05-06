@@ -140,6 +140,7 @@ else
 builder.Services.AddScoped<InfrastructureApp.Services.IAvatarService, InfrastructureApp.Services.AvatarService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IVoteService, VoteService>();
+builder.Services.AddScoped<IIssueNameService, IssueNameService>();
 builder.Services.AddScoped<IVerifyFixService, VerifyFixService>();
 builder.Services.AddScoped<IFlagService, FlagService>();
 builder.Services.AddScoped<IModerationService, ModerationService>();

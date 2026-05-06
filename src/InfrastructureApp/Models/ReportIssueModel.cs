@@ -66,6 +66,9 @@ namespace InfrastructureApp.Models
 
         public virtual ICollection<ReportFlag> ReportFlags { get; set; } = new List<ReportFlag>();
 
+        [MaxLength(100)]
+        public string? IssueName { get; set; }
+
 
         // ----------------------------------------------------
         // UI-only properties for form submission
