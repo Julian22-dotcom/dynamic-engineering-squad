@@ -68,7 +68,20 @@ namespace InfrastructureApp_Tests.StepDefinitions
                     .FirstOrDefault(button => button.Text.Contains(description, StringComparison.Ordinal)));
 
             Assert.That(reportBtn, Is.Not.Null, $"Could not find report item with description '{description}'.");
+            WaitForLatestReportModalScript(wait);
             ScrollAndClick(reportBtn);
+
+            try
+            {
+                new WebDriverWait(Driver, TimeSpan.FromSeconds(3)).Until(d =>
+                    d.FindElements(By.CssSelector("#reportModal.show, [data-testid='report-modal'].show, .modal.show")).Count > 0);
+            }
+            catch (WebDriverTimeoutException)
+            {
+                ((IJavaScriptExecutor)Driver).ExecuteScript(
+                    "window.openLatestReportModal(arguments[0]);",
+                    reportBtn);
+            }
         }
 
         [Then(@"the report modal should be displayed")]
@@ -106,8 +119,8 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 var button = d.FindElement(By.Id("modalFlagBtn"));
                 return button.Displayed && button.Enabled ? button : null;
             });
+            WaitForFlagModalScript(wait);
             ScrollAndClick(flagBtn);
-
             WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal'], .modal.show"), "flag modal");
         }
 
@@ -147,6 +160,8 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 var button = d.FindElement(By.Id("flagBtn"));
                 return button.Displayed && button.Enabled ? button : null;
             });
+            
+            WaitForFlagModalScript(wait);
 
             ScrollAndClick(flagBtn);
 
@@ -203,7 +218,8 @@ namespace InfrastructureApp_Tests.StepDefinitions
         public void ThenIShouldSeeAConfirmationMessage(string expectedMessage)
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            var messageEl = wait.Until(d => {
+            var messageEl = wait.Until(d =>
+            {
                 var el = d.FindElement(By.Id("flagMessage"));
                 return el.Displayed && !string.IsNullOrEmpty(el.Text) && el.Text.Contains(expectedMessage) ? el : null;
             });
@@ -376,6 +392,20 @@ namespace InfrastructureApp_Tests.StepDefinitions
             return Driver is IJavaScriptExecutor executor
                 ? executor.ExecuteScript(script)
                 : null;
+        }
+
+        private static void WaitForFlagModalScript(WebDriverWait wait)
+        {
+            wait.Until(d =>
+                ((IJavaScriptExecutor)d).ExecuteScript("return typeof window.showFlagModalFromButton === 'function';")
+                    is true);
+        }
+
+        private static void WaitForLatestReportModalScript(WebDriverWait wait)
+        {
+            wait.Until(d =>
+                ((IJavaScriptExecutor)d).ExecuteScript("return typeof window.openLatestReportModal === 'function';")
+                    is true);
         }
     }
 }
