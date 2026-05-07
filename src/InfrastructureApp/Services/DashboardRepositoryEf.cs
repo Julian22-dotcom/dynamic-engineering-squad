@@ -102,6 +102,20 @@ namespace InfrastructureApp.Services
                 .AsNoTracking()
                 .CountAsync(r => r.UserId == user.Id);
 
+            // SCRUM-137: Load only this logged-in user's submitted reports for the private Dashboard.
+            var submittedReports = await _db.ReportIssue
+                .AsNoTracking()
+                .Where(r => r.UserId == user.Id)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new DashboardSubmittedReportViewModel
+                {
+                    Id = r.Id,
+                    Description = r.Description,
+                    Status = r.Status,
+                    CreatedDate = r.CreatedAt
+                })
+                .ToListAsync();
+
             // Get user points (if they exist)
             var pointsRow = await _db.UserPoints
                 .AsNoTracking()
@@ -121,6 +135,7 @@ namespace InfrastructureApp.Services
                 Username = user.UserName ?? "DemoUser",
                 Email = user.Email ?? "demo@example.com",
                 ReportsSubmitted = reportsSubmitted,
+                SubmittedReports = submittedReports,
                 Points = pointsRow?.CurrentPoints ?? 0,
                 AvatarKey = user.AvatarKey,
                 AvatarUrl = user.AvatarUrl,
