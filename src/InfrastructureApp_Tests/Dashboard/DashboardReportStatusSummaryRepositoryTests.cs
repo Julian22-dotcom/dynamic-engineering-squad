@@ -58,6 +58,30 @@ namespace InfrastructureApp_Tests.Dashboard
             Assert.That(result.ReportStatusSummary[0].Count, Is.EqualTo(2));
         }
 
+        // TEST 2: Reports from other users are excluded from the logged-in user's status summary.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenOtherUsersHaveReports_ExcludesOtherUsersStatusCounts()
+        {
+            // Arrange: create reports for the logged-in user and another user.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            var otherUser = CreateUser("other-user", "other@test.com");
+            _db.Users.AddRange(currentUser, otherUser);
+            _db.ReportIssue.AddRange(
+                CreateReport(currentUser.Id, "Current user report", "Approved"),
+                CreateReport(otherUser.Id, "Other user report", "Resolved"));
+            await _db.SaveChangesAsync();
+
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: only the logged-in user's report status is counted.
+            Assert.That(result.ReportStatusSummary, Has.Count.EqualTo(1));
+            Assert.That(result.ReportStatusSummary[0].Status, Is.EqualTo("Approved"));
+            Assert.That(result.ReportStatusSummary[0].Count, Is.EqualTo(1));
+            Assert.That(result.ReportStatusSummary.Select(summary => summary.Status), Does.Not.Contain("Resolved"));
+        }
 
         private DashboardRepositoryEf CreateRepositoryForCurrentUser(Users currentUser)
         {
