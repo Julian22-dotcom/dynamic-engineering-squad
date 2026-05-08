@@ -14,6 +14,9 @@ namespace InfrastructureApp.ViewModels
         // Total number of reports submitted by the user
         public int ReportsSubmitted { get; set; }
 
+        // SCRUM-137: Reports submitted by the logged-in user for the private Dashboard.
+        public List<DashboardSubmittedReportViewModel> SubmittedReports { get; set; } = new();
+
         // Current points earned by the user
         public int Points { get; set; }
 
