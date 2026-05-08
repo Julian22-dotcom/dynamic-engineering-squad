@@ -35,6 +35,29 @@ namespace InfrastructureApp_Tests.Dashboard
             _db.Dispose();
         }
 
+        // TEST 1: Reports are counted by ReportIssue.Status for the logged-in user.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenCurrentUserHasReports_CountsReportsByStatus()
+        {
+            // Arrange: create a logged-in user with multiple reports using the same status.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            _db.ReportIssue.AddRange(
+                CreateReport(currentUser.Id, "Approved report one", "Approved"),
+                CreateReport(currentUser.Id, "Approved report two", "Approved"));
+            await _db.SaveChangesAsync();
+
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: the status summary contains one Approved row with the correct count.
+            Assert.That(result.ReportStatusSummary, Has.Count.EqualTo(1));
+            Assert.That(result.ReportStatusSummary[0].Status, Is.EqualTo("Approved"));
+            Assert.That(result.ReportStatusSummary[0].Count, Is.EqualTo(2));
+        }
+
 
         private DashboardRepositoryEf CreateRepositoryForCurrentUser(Users currentUser)
         {
