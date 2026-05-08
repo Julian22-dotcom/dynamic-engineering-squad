@@ -199,9 +199,6 @@
             <div class="card-body">
                 <p><strong>Reports submitted:</strong> @Model.ReportsSubmitted</p>
                 <p><strong>Points:</strong> @Model.Points</p>
-                <p class="text-muted mb-0">
-                    Points displayed may use seeded or placeholder data for now.
-                </p>
                 @if (Model.ReportStatusSummary.Count > 0)
                 {
                     @* SCRUM-142: Shows compact report status counts for the logged-in user's Dashboard. *@
