@@ -16,10 +16,20 @@
 
         let muted = false;
         let failed = false;
+        let playing = false;
 
         audio.addEventListener("error", function () {
             failed = true;
+            playing = false;
             warn(`${label}: failed to load audio from "${src}". Verify the file exists under wwwroot/audio/minigames and the URL is correct.`);
+        });
+
+        audio.addEventListener("ended", function () {
+            playing = false;
+
+            if (loop && !failed) {
+                play();
+            }
         });
 
         function play() {
@@ -29,17 +39,28 @@
             }
 
             audio.muted = muted;
+            playing = true;
             const promise = audio.play();
             if (promise && typeof promise.catch === "function") {
                 promise.catch(function (error) {
+                    playing = false;
                     warn(`${label}: play() was rejected by the browser. This usually means autoplay/user-interaction rules blocked it, or the file could not be loaded.`, error);
                 });
             }
         }
 
+        function playIfNeeded() {
+            if (playing) {
+                return;
+            }
+
+            play();
+        }
+
         function stop() {
             audio.pause();
             audio.currentTime = 0;
+            playing = false;
         }
 
         function toggleMute() {
@@ -58,9 +79,11 @@
 
         return {
             play: play,
+            playIfNeeded: playIfNeeded,
             stop: stop,
             toggleMute: toggleMute,
-            isMuted: function () { return muted; }
+            isMuted: function () { return muted; },
+            isPlaying: function () { return playing; }
         };
     }
 
@@ -69,12 +92,14 @@
 
         return {
             play: function () { },
+            playIfNeeded: function () { },
             stop: function () { },
             toggleMute: function () {
                 muted = !muted;
                 return muted;
             },
-            isMuted: function () { return muted; }
+            isMuted: function () { return muted; },
+            isPlaying: function () { return false; }
         };
     }
 

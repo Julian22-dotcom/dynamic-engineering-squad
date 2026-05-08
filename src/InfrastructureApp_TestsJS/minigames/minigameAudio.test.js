@@ -50,6 +50,7 @@ describe("minigameAudio.js", () => {
 
         expect(controller).toBeTruthy();
         expect(() => controller.play()).not.toThrow();
+        expect(() => controller.playIfNeeded()).not.toThrow();
         expect(() => controller.stop()).not.toThrow();
         expect(controller.toggleMute()).toBe(true);
         expect(controller.toggleMute()).toBe(false);
@@ -77,10 +78,31 @@ describe("minigameAudio.js", () => {
 
         controller.play();
         expect(audioInstances[0].play).toHaveBeenCalledTimes(1);
+        expect(controller.isPlaying()).toBe(true);
 
         controller.stop();
         expect(audioInstances[0].pause).toHaveBeenCalledTimes(1);
         expect(audioInstances[0].currentTime).toBe(0);
+        expect(controller.isPlaying()).toBe(false);
+    });
+
+    test("playIfNeeded only starts playback once while audio is already playing", () => {
+        const controller = window.createMinigameAudio({ src: "/audio/minigames/theme.mp3" });
+
+        controller.playIfNeeded();
+        controller.playIfNeeded();
+
+        expect(audioInstances[0].play).toHaveBeenCalledTimes(1);
+    });
+
+    test("ended restarts looping audio automatically", () => {
+        const controller = window.createMinigameAudio({ src: "/audio/minigames/theme.mp3" });
+
+        controller.play();
+        audioInstances[0].dispatch("ended");
+
+        expect(audioInstances[0].play).toHaveBeenCalledTimes(2);
+        expect(controller.isPlaying()).toBe(true);
     });
 
     test("toggleMute updates audio muted state and returns the new state", () => {
@@ -103,7 +125,8 @@ describe("minigameAudio.js", () => {
     });
 
     test("beforeunload and pagehide stop audio", () => {
-        window.createMinigameAudio({ src: "/audio/minigames/theme.mp3" });
+        const controller = window.createMinigameAudio({ src: "/audio/minigames/theme.mp3" });
+        controller.play();
 
         window.dispatchEvent(new Event("beforeunload"));
         expect(audioInstances[0].pause).toHaveBeenCalledTimes(1);
@@ -116,7 +139,8 @@ describe("minigameAudio.js", () => {
     });
 
     test("visibilitychange hidden pauses audio", () => {
-        window.createMinigameAudio({ src: "/audio/minigames/theme.mp3" });
+        const controller = window.createMinigameAudio({ src: "/audio/minigames/theme.mp3" });
+        controller.play();
 
         Object.defineProperty(document, "visibilityState", {
             configurable: true,

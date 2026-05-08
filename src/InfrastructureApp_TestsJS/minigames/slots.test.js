@@ -43,7 +43,7 @@ describe("slots.js", () => {
         expect(() => loadScript("slots.js")).not.toThrow();
     });
 
-    test("clicking Spin posts with anti-forgery header, updates DOM, and uses audio", async () => {
+    test("clicking Spin posts with anti-forgery header, updates DOM, and starts persistent audio", async () => {
         buildDOM();
         global.fetch.mockResolvedValue({
             ok: true,
@@ -64,7 +64,7 @@ describe("slots.js", () => {
         spinButton.click();
 
         expect(spinButton.disabled).toBe(true);
-        expect(audioController.play).toHaveBeenCalledTimes(1);
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(1);
         expect(fetch).toHaveBeenCalledWith("/Minigames/SpinSlots", {
             method: "POST",
             headers: {
@@ -75,12 +75,18 @@ describe("slots.js", () => {
         await flushPromises();
 
         const reels = [...document.querySelectorAll("[data-slot-reel]")];
-        expect(reels.map((reel) => reel.textContent)).toEqual(["Pothole", "Road Sign", "Traffic Light"]);
+        const reelImages = reels.map((reel) => reel.querySelector("img"));
+        expect(reelImages.map((image) => image.alt)).toEqual(["Pothole", "Road sign", "Traffic light"]);
+        expect(reelImages.map((image) => image.getAttribute("src"))).toEqual([
+            "/Images/minigames/symbols/pothole.svg",
+            "/Images/minigames/symbols/road-sign.svg",
+            "/Images/minigames/symbols/traffic-light.svg"
+        ]);
         expect(document.getElementById("slotsCurrentPoints").textContent).toBe("7");
         expect(document.getElementById("slotsDailyProgress").textContent).toBe("2 / 5");
         expect(document.getElementById("slotsResult").textContent).toContain("No match this spin");
         expect(spinButton.disabled).toBe(false);
-        expect(audioController.stop).toHaveBeenCalledTimes(1);
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("winning response shows success alert", async () => {
@@ -131,6 +137,7 @@ describe("slots.js", () => {
 
         expect(document.getElementById("slotsResult").className).toContain("alert-warning");
         expect(spinButton.disabled).toBe(true);
+        expect(audioController.stop).toHaveBeenCalledTimes(1);
     });
 
     test("401 redirects to login", async () => {
@@ -143,7 +150,7 @@ describe("slots.js", () => {
         await flushPromises();
 
         expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(audioController.stop).toHaveBeenCalledTimes(1);
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("fetch failure shows danger alert and re-enables button", async () => {
@@ -158,7 +165,48 @@ describe("slots.js", () => {
 
         expect(document.getElementById("slotsResult").className).toContain("alert-danger");
         expect(spinButton.disabled).toBe(false);
-        expect(audioController.stop).toHaveBeenCalledTimes(1);
+        expect(audioController.stop).not.toHaveBeenCalled();
+    });
+
+    test("later spins do not restart or stack audio playback", async () => {
+        buildDOM();
+        global.fetch
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    symbols: ["pothole", "road-sign", "traffic-light"],
+                    currentPoints: 7,
+                    dailyPointsEarned: 2,
+                    dailyPointsLimit: 5,
+                    hasReachedDailyLimit: false,
+                    isWinningSpin: false,
+                    awardedPoints: 0,
+                    resultLabel: "Road Crew Spin"
+                })
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    symbols: ["bridge", "bridge", "bridge"],
+                    currentPoints: 8,
+                    dailyPointsEarned: 3,
+                    dailyPointsLimit: 5,
+                    hasReachedDailyLimit: false,
+                    isWinningSpin: true,
+                    awardedPoints: 1,
+                    resultLabel: "Three of a Kind"
+                })
+            });
+
+        loadScript("slots.js");
+        const spinButton = document.getElementById("slotsSpinButton");
+        spinButton.click();
+        await flushPromises();
+        spinButton.click();
+        await flushPromises();
+
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(2);
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("mute button toggles text", () => {

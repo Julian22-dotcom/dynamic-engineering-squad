@@ -36,7 +36,8 @@ public class ShareButtonTests
         var flagService = Substitute.For<IFlagService>();
 
         var issueNameService = Substitute.For<IIssueNameService>();
-        _controller = new ReportIssueController(_service, userManager, voteService, verifyFixService, flagService, issueNameService)
+        var auditLogService = Substitute.For<IAuditLogService>();
+        _controller = new ReportIssueController(_service, userManager, voteService, verifyFixService, flagService, issueNameService, auditLogService)
         {
             ControllerContext = new ControllerContext
             {

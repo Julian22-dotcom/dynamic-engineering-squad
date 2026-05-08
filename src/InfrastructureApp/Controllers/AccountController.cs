@@ -17,15 +17,17 @@ namespace InfrastructureApp.Controllers
         private readonly IUserService _userService;
         private readonly IAvatarService _avatarService;
         private readonly IEmailService _emailService;
+        private readonly IAuditLogService _auditLogService;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IAvatarService avatarService, IUserService userService, IEmailService emailService, ILogger<AccountController> logger)
+        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IAvatarService avatarService, IUserService userService, IEmailService emailService, IAuditLogService auditLogService, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _avatarService = avatarService;
             _userService = userService;
             _emailService = emailService;
+            _auditLogService = auditLogService;
             _logger = logger;
         }
 
@@ -55,6 +57,7 @@ namespace InfrastructureApp.Controllers
 
             if (result.Succeeded)
             {
+                await _auditLogService.LogAsync("User login succeeded.", user?.Id);
                 return RedirectToAction("Index", "Home");
             }
 
@@ -106,6 +109,8 @@ namespace InfrastructureApp.Controllers
 
                 await _emailService.SendEmailAsync(model.Email, "Confirm your email",
                     $"Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.");
+
+                await _auditLogService.LogAsync("User registration completed.", user.Id);
 
                 return RedirectToAction("RegisterConfirmation", new { email = model.Email });
             }
@@ -203,7 +208,10 @@ namespace InfrastructureApp.Controllers
             string currentAdminId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _userService.UpdateUserRolesAsync(model, currentAdminId);
         
-            if (result.Succeeded) return RedirectToAction("Admin");
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Admin");
+            }
 
             foreach (var error in result.Errors) ModelState.AddModelError("", error.Description);
             return View(model);
@@ -434,6 +442,11 @@ namespace InfrastructureApp.Controllers
             {
                 return View(_avatarService.BuildChooseAvatarViewModel(user, vm.SelectedAvatarKey, result.ErrorMessage));
             }
+
+            var avatarAction = vm.UseUploadedImage
+                ? "Avatar changed to uploaded image."
+                : $"Avatar changed to preset '{vm.SelectedAvatarKey ?? "unknown"}'.";
+            await _auditLogService.LogAsync(avatarAction, user.Id);
 
             await _signInManager.RefreshSignInAsync(user);
             return RedirectToAction("Index", "Home");

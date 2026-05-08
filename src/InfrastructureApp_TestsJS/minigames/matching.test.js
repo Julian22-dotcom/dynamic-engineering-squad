@@ -53,6 +53,18 @@ describe("matching.js", () => {
         loadScript("matching.js");
 
         expect(getCards()).toHaveLength(12);
+        const revealedImages = getCards().map((card) => card.querySelector(".matching-card-face-back img"));
+        expect(revealedImages.every((image) => image instanceof HTMLImageElement)).toBe(true);
+    });
+
+    test("revealed cards use image assets with alt text", () => {
+        buildDOM();
+        loadScript("matching.js");
+
+        const firstCardImage = getCards()[0].querySelector(".matching-card-face-back img");
+        expect(firstCardImage).not.toBeNull();
+        expect(firstCardImage.getAttribute("src")).toContain("/Images/minigames/symbols/");
+        expect(firstCardImage.getAttribute("alt")).not.toBe("");
     });
 
     test("clicking a card flips it and clicking it again does nothing", () => {
@@ -62,10 +74,10 @@ describe("matching.js", () => {
         const card = getCards()[0];
         card.click();
         expect(card.classList.contains("is-flipped")).toBe(true);
-        expect(audioController.play).toHaveBeenCalledTimes(1);
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(1);
 
         card.click();
-        expect(audioController.play).toHaveBeenCalledTimes(1);
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(1);
     });
 
     test("matching pair becomes matched", () => {
@@ -108,7 +120,8 @@ describe("matching.js", () => {
                 currentPoints: 12,
                 dailyPointsEarned: 3,
                 dailyPointsLimit: 5,
-                awardedPoints: 1
+                awardedPoints: 1,
+                hasReachedDailyLimit: false
             })
         });
 
@@ -136,7 +149,7 @@ describe("matching.js", () => {
         expect(document.getElementById("matchingCurrentPoints").textContent).toBe("12");
         expect(document.getElementById("matchingDailyProgress").textContent).toBe("3 / 5");
         expect(document.getElementById("matchingResult").className).toContain("alert-success");
-        expect(audioController.stop).toHaveBeenCalledTimes(2);
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("awarded points 0 shows daily-limit warning", async () => {
@@ -147,7 +160,8 @@ describe("matching.js", () => {
                 currentPoints: 12,
                 dailyPointsEarned: 5,
                 dailyPointsLimit: 5,
-                awardedPoints: 0
+                awardedPoints: 0,
+                hasReachedDailyLimit: true
             })
         });
 
@@ -161,6 +175,7 @@ describe("matching.js", () => {
         await flushPromises();
 
         expect(document.getElementById("matchingResult").className).toContain("alert-warning");
+        expect(audioController.stop).toHaveBeenCalledTimes(1);
     });
 
     test("failed completion shows danger message and allows retry", async () => {
@@ -183,6 +198,7 @@ describe("matching.js", () => {
         restartButton.click();
         expect(getCards()).toHaveLength(12);
         expect(document.getElementById("matchingResult").textContent).toContain("Flip cards and find all matching pairs");
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("401 redirects to login", async () => {
@@ -200,6 +216,37 @@ describe("matching.js", () => {
         await flushPromises();
 
         expect(consoleErrorSpy).toHaveBeenCalled();
+        expect(audioController.stop).not.toHaveBeenCalled();
+    });
+
+    test("repeated card clicks do not stop music between turns or on restart", () => {
+        buildDOM();
+        loadScript("matching.js");
+
+        const cards = getCards();
+        cards[0].click();
+        cards[1].click();
+        document.getElementById("matchingRestartButton").click();
+
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(2);
+        expect(audioController.stop).not.toHaveBeenCalled();
+    });
+
+    test("daily limit on page load prevents music from starting during practice play", () => {
+        setupDOM(`
+            <input name="__RequestVerificationToken" value="token-456" />
+            <div id="matchingResult" class="alert alert-warning mb-3"></div>
+            <div id="matchingBoard" data-complete-url="/Minigames/CompleteGame" data-game-key="matching"></div>
+            <button id="matchingRestartButton" type="button">Shuffle Board</button>
+            <button id="matchingMuteButton" type="button">Mute Music</button>
+            <div id="matchingCurrentPoints">0</div>
+            <div id="matchingDailyProgress">5 / 5</div>
+        `);
+
+        loadScript("matching.js");
+        getCards()[0].click();
+
+        expect(audioController.playIfNeeded).not.toHaveBeenCalled();
     });
 
     test("restart rebuilds board and mute button toggles text", () => {

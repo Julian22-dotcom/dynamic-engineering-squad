@@ -67,6 +67,7 @@ builder.Services.AddScoped<IEmailService, AzureEmailService>();
 builder.Services.AddScoped<ILeaderboardRepository, LeaderboardRepositoryEf>();
 builder.Services.AddScoped<LeaderboardService>();
 builder.Services.AddScoped<IPointsShopService, PointsShopService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<IMinigameService, MinigameService>();
 builder.Services.AddScoped<IMinigameViewModelFactory, MinigameViewModelFactory>();
 
