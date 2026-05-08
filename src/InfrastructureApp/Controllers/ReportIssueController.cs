@@ -19,8 +19,9 @@ namespace InfrastructureApp.Controllers
         private readonly IVerifyFixService _verifyFixService;
         private readonly IFlagService _flagService;
         private readonly IIssueNameService _issueNameService;
+        private readonly IAuditLogService _auditLogService;
 
-        public ReportIssueController(IReportIssueService service, UserManager<Users> userManager, IVoteService voteService, IVerifyFixService verifyFixService, IFlagService flagService, IIssueNameService issueNameService)
+        public ReportIssueController(IReportIssueService service, UserManager<Users> userManager, IVoteService voteService, IVerifyFixService verifyFixService, IFlagService flagService, IIssueNameService issueNameService, IAuditLogService auditLogService)
         {
             _service = service;
             _userManager = userManager;
@@ -28,6 +29,7 @@ namespace InfrastructureApp.Controllers
             _verifyFixService = verifyFixService;
             _flagService = flagService;
             _issueNameService = issueNameService;
+            _auditLogService = auditLogService;
         }
 
         //landing page
@@ -97,6 +99,9 @@ namespace InfrastructureApp.Controllers
             {
                 
                 var (reportId, status) = await _service.CreateAsync(report, userId);
+                await _auditLogService.LogAsync(
+                    $"Report submitted. ReportId={reportId}; Status={status}.",
+                    userId);
 
                 TempData["Success"] = status == "Approved"
                     ? "XP gained! +10 points awarded."
@@ -151,6 +156,9 @@ namespace InfrastructureApp.Controllers
             var found = await _service.UpdateStatusAsync(id, "Verified Fixed");
             if (!found) return NotFound();
 
+            await _auditLogService.LogAsync(
+                $"Report verified fixed by administrator. ReportId={id}; Status=Verified Fixed.",
+                _userManager.GetUserId(User));
             TempData["Success"] = "Report marked as Verified Fixed.";
             return RedirectToAction("Details", new { id });
         }

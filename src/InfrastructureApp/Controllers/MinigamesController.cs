@@ -1,4 +1,5 @@
 using InfrastructureApp.Models;
+using InfrastructureApp.Services;
 using InfrastructureApp.Services.Minigames;
 using InfrastructureApp.ViewModels.Minigames;
 using Microsoft.AspNetCore.Authorization;
@@ -13,15 +14,18 @@ namespace InfrastructureApp.Controllers
         private readonly IMinigameService _minigameService;
         private readonly IMinigameViewModelFactory _minigameViewModelFactory;
         private readonly UserManager<Users> _userManager;
+        private readonly IAuditLogService _auditLogService;
 
         public MinigamesController(
             IMinigameService minigameService,
             IMinigameViewModelFactory minigameViewModelFactory,
-            UserManager<Users> userManager)
+            UserManager<Users> userManager,
+            IAuditLogService auditLogService)
         {
             _minigameService = minigameService;
             _minigameViewModelFactory = minigameViewModelFactory;
             _userManager = userManager;
+            _auditLogService = auditLogService;
         }
 
         [HttpGet]
@@ -95,6 +99,9 @@ namespace InfrastructureApp.Controllers
             }
 
             var result = await _minigameService.SpinSlotsAsync(userId);
+            await _auditLogService.LogAsync(
+                $"Minigame played. Game=slots; AwardedPoints={result.AwardedPoints}; WinningSpin={result.IsWinningSpin}; DailyPointsEarned={result.DailyPointsEarned}.",
+                userId);
 
             return Json(new GameCompletionResultViewModel
             {
@@ -126,6 +133,9 @@ namespace InfrastructureApp.Controllers
             }
 
             var result = await _minigameService.CompleteGameAsync(userId, request.GameKey);
+            await _auditLogService.LogAsync(
+                $"Minigame played. Game={result.GameKey}; AwardedPoints={result.AwardedPoints}; DailyPointsEarned={result.DailyPointsEarned}.",
+                userId);
 
             return Json(new GameCompletionResultViewModel
             {
@@ -157,6 +167,10 @@ namespace InfrastructureApp.Controllers
                         QuestionId = request?.QuestionId ?? string.Empty,
                         SelectedOptionKey = request?.SelectedOptionKey ?? string.Empty
                     });
+
+                await _auditLogService.LogAsync(
+                    $"Minigame played. Game=trivia; AwardedPoints={result.AwardedPoints}; WasCorrect={result.WasCorrect}; RoundComplete={result.IsRoundComplete}; DailyPointsEarned={result.DailyPointsEarned}.",
+                    userId);
 
                 return Json(new GameCompletionResultViewModel
                 {

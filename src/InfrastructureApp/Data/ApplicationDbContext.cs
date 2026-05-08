@@ -36,6 +36,8 @@ namespace InfrastructureApp.Data
 
         public DbSet<ModerationActionLog> ModerationActionLogs { get; set; } = null!;
 
+        public DbSet<AuditLog> AuditLogs { get; set; } = null!;
+
         //This is the place for constraints, defaults, indexes, and relationships
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -209,6 +211,30 @@ namespace InfrastructureApp.Data
             builder.Entity<ReportFlag>()
                 .HasIndex(f => new { f.ReportIssueId, f.UserId })
                 .IsUnique();
+
+            builder.Entity<AuditLog>(entity =>
+            {
+                entity.ToTable("AuditLogs");
+
+                entity.Property(log => log.AspNetUserId)
+                    .HasMaxLength(450);
+
+                entity.Property(log => log.UserName)
+                    .HasMaxLength(256);
+
+                entity.Property(log => log.Email)
+                    .HasMaxLength(256);
+
+                entity.Property(log => log.Role)
+                    .HasMaxLength(256);
+
+                entity.Property(log => log.TimestampUtc)
+                    .IsRequired();
+
+                entity.Property(log => log.Action)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+            });
 
         }
     }

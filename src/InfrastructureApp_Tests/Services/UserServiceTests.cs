@@ -9,6 +9,7 @@ using InfrastructureApp.Models;
 using InfrastructureApp.Services;
 using InfrastructureApp.ViewModels.Account;
 using InfrastructureApp.Data;
+using NSubstitute;
 
 namespace InfrastructureApp_Tests.Services;
 
@@ -45,7 +46,7 @@ public class UserServiceTests
 
         await _context.Database.EnsureCreatedAsync();
 
-        _userService = new UserService(_userManager, _roleManager, _context);
+        _userService = new UserService(_userManager, _roleManager, _context, Substitute.For<IAuditLogService>());
     }
 
     [TearDown]

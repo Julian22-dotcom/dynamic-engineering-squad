@@ -11,14 +11,17 @@ public class UserService : IUserService
     private readonly UserManager<Users> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ApplicationDbContext _context;
+    private readonly IAuditLogService _auditLogService;
 
     public UserService(UserManager<Users> userManager,
         RoleManager<IdentityRole> roleManager,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        IAuditLogService auditLogService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _context = context;
+        _auditLogService = auditLogService;
     } 
 
     public async Task<PaginatedList<Users>> GetUsersWithRolesAsync(int page, int pageSize, string? searchTerm = null)
@@ -93,8 +96,18 @@ public class UserService : IUserService
             return removeResult;
         }
         
-        var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(y => y.RoleName);
-        return await _userManager.AddToRolesAsync(user, selectedRoles);
+        var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(y => y.RoleName).ToArray();
+        var addResult = await _userManager.AddToRolesAsync(user, selectedRoles);
+
+        if (addResult.Succeeded)
+        {
+            var rolesLabel = selectedRoles.Length == 0 ? "No roles" : string.Join(", ", selectedRoles);
+            await _auditLogService.LogAsync(
+                $"User role changed. TargetUserId={user.Id}; TargetUserName={user.UserName ?? "(unknown)"}; Roles={rolesLabel}.",
+                adminId);
+        }
+
+        return addResult;
     }
 
     public async Task<IdentityResult> DeleteUserAsync(string userId, string adminId)
