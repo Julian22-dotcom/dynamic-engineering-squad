@@ -83,6 +83,33 @@ namespace InfrastructureApp_Tests.Dashboard
             Assert.That(result.ReportStatusSummary.Select(summary => summary.Status), Does.Not.Contain("Resolved"));
         }
 
+        // TEST 3: Multiple real report statuses are counted correctly.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenCurrentUserHasMultipleStatuses_CountsEachStatusCorrectly()
+        {
+            // Arrange: create reports with Approved, Resolved, and Verified Fixed statuses.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            _db.ReportIssue.AddRange(
+                CreateReport(currentUser.Id, "Approved report one", "Approved"),
+                CreateReport(currentUser.Id, "Approved report two", "Approved"),
+                CreateReport(currentUser.Id, "Resolved report", "Resolved"),
+                CreateReport(currentUser.Id, "Verified fixed report", "Verified Fixed"));
+            await _db.SaveChangesAsync();
+
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: each status row has the expected count.
+            var countsByStatus = result.ReportStatusSummary.ToDictionary(summary => summary.Status, summary => summary.Count);
+            Assert.That(countsByStatus["Approved"], Is.EqualTo(2));
+            Assert.That(countsByStatus["Resolved"], Is.EqualTo(1));
+            Assert.That(countsByStatus["Verified Fixed"], Is.EqualTo(1));
+            Assert.That(countsByStatus.Keys, Has.Count.EqualTo(3));
+        }
+
         private DashboardRepositoryEf CreateRepositoryForCurrentUser(Users currentUser)
         {
             var httpContext = new DefaultHttpContext
