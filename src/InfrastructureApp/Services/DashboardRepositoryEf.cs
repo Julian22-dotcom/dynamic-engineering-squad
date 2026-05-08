@@ -170,6 +170,8 @@ namespace InfrastructureApp.Services
                 Email = user.Email ?? "demo@example.com",
                 ReportsSubmitted = reportsSubmitted,
                 ReportStatusSummary = reportStatusSummary,
+                // SCRUM-143: Show the user's private activity progress based on their submitted report count.
+                ReportActivityProgressLabel = BuildReportActivityProgressLabel(reportsSubmitted),
                 SubmittedReports = submittedReports,
                 Points = pointsRow?.CurrentPoints ?? 0,
                 AvatarKey = user.AvatarKey,
