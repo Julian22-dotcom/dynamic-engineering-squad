@@ -34,6 +34,126 @@ namespace InfrastructureApp_Tests.Dashboard
             _db.Dispose();
         }
 
+        // TEST 1: Zero reports returns New Reporter.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenUserHasZeroReports_ReturnsNewReporter()
+        {
+            // Arrange: create a logged-in user with no submitted reports.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            await _db.SaveChangesAsync();
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: the exact activity progress label matches the zero-report threshold.
+            Assert.That(result.ReportActivityProgressLabel, Is.EqualTo("New Reporter"));
+        }
+
+        // TEST 2: One report returns Getting Started.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenUserHasOneReport_ReturnsGettingStarted()
+        {
+            // Arrange: create a logged-in user with one submitted report.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            await AddReportsForUserAsync(currentUser.Id, 1);
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: the exact activity progress label matches the one-report threshold.
+            Assert.That(result.ReportActivityProgressLabel, Is.EqualTo("Getting Started"));
+        }
+
+        // TEST 3: Nine reports returns Getting Started.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenUserHasNineReports_ReturnsGettingStarted()
+        {
+            // Arrange: create a logged-in user with nine submitted reports.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            await AddReportsForUserAsync(currentUser.Id, 9);
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: the exact activity progress label matches the upper Getting Started threshold.
+            Assert.That(result.ReportActivityProgressLabel, Is.EqualTo("Getting Started"));
+        }
+
+        // TEST 4: Ten reports returns Active Reporter.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenUserHasTenReports_ReturnsActiveReporter()
+        {
+            // Arrange: create a logged-in user with ten submitted reports.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            await AddReportsForUserAsync(currentUser.Id, 10);
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: the exact activity progress label matches the lower Active Reporter threshold.
+            Assert.That(result.ReportActivityProgressLabel, Is.EqualTo("Active Reporter"));
+        }
+
+        // TEST 5: Twenty-four reports returns Active Reporter.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenUserHasTwentyFourReports_ReturnsActiveReporter()
+        {
+            // Arrange: create a logged-in user with twenty-four submitted reports.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            await AddReportsForUserAsync(currentUser.Id, 24);
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: the exact activity progress label matches the upper Active Reporter threshold.
+            Assert.That(result.ReportActivityProgressLabel, Is.EqualTo("Active Reporter"));
+        }
+
+        // TEST 6: Twenty-five reports returns Community Contributor.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenUserHasTwentyFiveReports_ReturnsCommunityContributor()
+        {
+            // Arrange: create a logged-in user with twenty-five submitted reports.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            _db.Users.Add(currentUser);
+            await AddReportsForUserAsync(currentUser.Id, 25);
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: the exact activity progress label matches the Community Contributor threshold.
+            Assert.That(result.ReportActivityProgressLabel, Is.EqualTo("Community Contributor"));
+        }
+
+        // TEST 7: Other users' reports do not affect the logged-in user's activity progress label.
+        [Test]
+        public async Task GetDashboardSummaryAsync_WhenOtherUserHasTwentyFiveReports_ReturnsCurrentUsersLabel()
+        {
+            // Arrange: create a logged-in user with no reports and another user with many reports.
+            var currentUser = CreateUser("current-user", "current@test.com");
+            var otherUser = CreateUser("other-user", "other@test.com");
+            _db.Users.AddRange(currentUser, otherUser);
+            await AddReportsForUserAsync(otherUser.Id, 25);
+            var repo = CreateRepositoryForCurrentUser(currentUser);
+
+            // Act: load the private Dashboard summary.
+            var result = await repo.GetDashboardSummaryAsync();
+
+            // Assert: only the logged-in user's report count determines the exact label.
+            Assert.That(result.ReportActivityProgressLabel, Is.EqualTo("New Reporter"));
+        }
+
         private DashboardRepositoryEf CreateRepositoryForCurrentUser(Users currentUser)
         {
             var httpContext = new DefaultHttpContext
