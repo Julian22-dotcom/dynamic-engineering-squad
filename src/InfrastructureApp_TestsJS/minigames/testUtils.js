@@ -19,9 +19,11 @@ function mockFetchJson(data, ok = true, extra = {}) {
 function mockAudioController() {
     return {
         play: jest.fn(),
+        playIfNeeded: jest.fn(),
         stop: jest.fn(),
         toggleMute: jest.fn(),
-        isMuted: jest.fn()
+        isMuted: jest.fn(),
+        isPlaying: jest.fn()
     };
 }
 

@@ -36,7 +36,7 @@ namespace InfrastructureApp.Services.Minigames
                 {
                     GameKey = MinigameConstants.MatchingGameKey,
                     Name = "Image Matching",
-                    Description = "Match two images on a board of 20",
+                    Description = "Match two images on a board of 12",
                     PlayUrl = "/Minigames/Matching",
                     ImageUrl = "/images/minigames/matching-card.svg",
                     ImageAltText = "Matching cards with infrastructure symbols",

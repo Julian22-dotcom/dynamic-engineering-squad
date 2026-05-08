@@ -16,6 +16,9 @@ using InfrastructureApp.Services.ImageHashing;
 using InfrastructureApp.Services.ReportAssist;
 using InfrastructureApp.Services.ImageSeverity;
 using InfrastructureApp_Tests.TestDoubles;
+using System.Net;
+using System.Net.Sockets;
+#pragma warning disable NUnit1032
 
 namespace InfrastructureApp_Tests.SeleniumTests.Helpers
 {
@@ -24,17 +27,28 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
     {
         protected static IWebDriver Driver = null!;
 
-        protected static readonly string BaseUrl =
-            "http://127.0.0.1:5044";
+        protected static string BaseUrl { get; private set; } = string.Empty;
 
         protected static IHost? ServerHost;
         protected static SqliteConnection? SqliteConnection;
+        private static readonly SemaphoreSlim ServerStartLock = new(1, 1);
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
-            if (ServerHost == null)
+            if (ServerHost != null)
             {
+                return;
+            }
+
+            await ServerStartLock.WaitAsync();
+            try
+            {
+                if (ServerHost != null)
+                {
+                    return;
+                }
+
                 SqliteConnection = new SqliteConnection("DataSource=:memory:");
                 SqliteConnection.Open();
 
@@ -81,6 +95,7 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
                 builder.Services.AddScoped<IVerifyFixService, VerifyFixService>();
                 builder.Services.AddScoped<IFlagService, FlagService>();
                 builder.Services.AddScoped<IPointsShopService, PointsShopService>();
+                builder.Services.AddScoped<IAuditLogService, AuditLogService>();
                 builder.Services.AddScoped<IModerationService, ModerationService>();
                 builder.Services.AddScoped<ITripCheckService, TripCheckService>();
                 builder.Services.AddScoped<IContentModerationService, ContentModerationService>();
@@ -98,6 +113,7 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
                     options.SenderEmail = "test@example.com";
                 });
 
+                BaseUrl = $"http://127.0.0.1:{GetFreeTcpPort()}";
                 builder.WebHost.UseUrls(BaseUrl);
                 builder.WebHost.UseKestrel();
 
@@ -120,6 +136,10 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
 
                 ServerHost = app;
                 await ServerHost.StartAsync();
+            }
+            finally
+            {
+                ServerStartLock.Release();
             }
         }
 
@@ -175,7 +195,7 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
         [OneTimeTearDown]
         public async Task OneTimeTearDown()
         {
-            await OneTimeTearDownStatic();
+            await Task.CompletedTask;
         }
 
         public static async Task OneTimeTearDownStatic()
@@ -208,14 +228,42 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
         {
             Driver.Navigate().GoToUrl($"{BaseUrl}/Account/Login");
 
+            var usernameInput = WaitForVisible(By.CssSelector("[data-testid='login-username']"));
+            var passwordInput = WaitForVisible(By.CssSelector("[data-testid='login-password']"));
+            var submitButton = WaitForClickable(By.CssSelector("[data-testid='login-submit']"));
+
+            usernameInput.Clear();
+            usernameInput.SendKeys(username);
+            passwordInput.Clear();
+            passwordInput.SendKeys(password);
+            submitButton.Click();
+
             var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            wait.Until(d => d.FindElement(By.Id("UserName")));
-
-            Driver.FindElement(By.Id("UserName")).SendKeys(username);
-            Driver.FindElement(By.Id("Password")).SendKeys(password);
-            Driver.FindElement(By.CssSelector("input[type='submit']")).Click();
-
             wait.Until(d => !d.Url.Contains("/Account/Login"));
+        }
+
+        protected IWebElement WaitForVisible(By by, int seconds = 10)
+        {
+            var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(Driver, TimeSpan.FromSeconds(seconds));
+            wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
+
+            return wait.Until(driver =>
+            {
+                var element = driver.FindElement(by);
+                return element.Displayed ? element : null;
+            })!;
+        }
+
+        protected IWebElement WaitForClickable(By by, int seconds = 10)
+        {
+            var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(Driver, TimeSpan.FromSeconds(seconds));
+            wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
+
+            return wait.Until(driver =>
+            {
+                var element = driver.FindElement(by);
+                return element.Displayed && element.Enabled ? element : null;
+            })!;
         }
 
         private static string FindInfrastructureAppContentRoot()
@@ -236,5 +284,15 @@ namespace InfrastructureApp_Tests.SeleniumTests.Helpers
             throw new DirectoryNotFoundException(
                 $"Could not locate the InfrastructureApp content root from '{AppContext.BaseDirectory}'.");
         }
+
+        private static int GetFreeTcpPort()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
     }
 }
+#pragma warning restore NUnit1032

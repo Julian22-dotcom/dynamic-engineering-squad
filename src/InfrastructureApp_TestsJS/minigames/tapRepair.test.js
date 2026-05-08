@@ -62,7 +62,7 @@ describe("tapRepair.js", () => {
         expect(document.getElementById("tapRepairStartButton").disabled).toBe(true);
         expect(document.getElementById("tapRepairStatus").textContent).toContain("Repairing active potholes");
         expect(document.getElementById("tapRepairResult").textContent).toContain("Round in progress");
-        expect(audioController.play).toHaveBeenCalledTimes(1);
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(1);
         expect(document.querySelectorAll(".tap-repair-pothole").length).toBeGreaterThan(0);
     });
 
@@ -100,7 +100,8 @@ describe("tapRepair.js", () => {
                 currentPoints: 20,
                 dailyPointsEarned: 2,
                 dailyPointsLimit: 5,
-                awardedPoints: 1
+                awardedPoints: 1,
+                hasReachedDailyLimit: false
             })
         });
 
@@ -126,7 +127,7 @@ describe("tapRepair.js", () => {
         expect(document.getElementById("tapRepairCurrentPoints").textContent).toBe("20");
         expect(document.getElementById("tapRepairDailyProgress").textContent).toBe("2 / 5");
         expect(document.getElementById("tapRepairResult").className).toContain("alert-success");
-        expect(audioController.stop).toHaveBeenCalledTimes(1);
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("awarded points 0 shows warning message", async () => {
@@ -137,7 +138,8 @@ describe("tapRepair.js", () => {
                 currentPoints: 20,
                 dailyPointsEarned: 5,
                 dailyPointsLimit: 5,
-                awardedPoints: 0
+                awardedPoints: 0,
+                hasReachedDailyLimit: true
             })
         });
 
@@ -147,6 +149,7 @@ describe("tapRepair.js", () => {
         await flushPromises();
 
         expect(document.getElementById("tapRepairResult").className).toContain("alert-warning");
+        expect(audioController.stop).toHaveBeenCalledTimes(1);
     });
 
     test("fetch failure shows danger message", async () => {
@@ -160,6 +163,7 @@ describe("tapRepair.js", () => {
         await flushPromises();
 
         expect(document.getElementById("tapRepairResult").className).toContain("alert-danger");
+        expect(audioController.stop).not.toHaveBeenCalled();
     });
 
     test("401 redirects to login", async () => {
@@ -173,6 +177,55 @@ describe("tapRepair.js", () => {
         await flushPromises();
 
         expect(consoleErrorSpy).toHaveBeenCalled();
+        expect(audioController.stop).not.toHaveBeenCalled();
+    });
+
+    test("later rounds do not stop or restart music while under the daily limit", async () => {
+        buildDOM();
+        global.fetch
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    currentPoints: 20,
+                    dailyPointsEarned: 1,
+                    dailyPointsLimit: 5,
+                    awardedPoints: 1,
+                    hasReachedDailyLimit: false
+                })
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({
+                    currentPoints: 21,
+                    dailyPointsEarned: 2,
+                    dailyPointsLimit: 5,
+                    awardedPoints: 1,
+                    hasReachedDailyLimit: false
+                })
+            });
+
+        loadScript("tapRepair.js");
+
+        document.getElementById("tapRepairStartButton").click();
+        jest.advanceTimersByTime(3000);
+        await flushPromises();
+
+        document.getElementById("tapRepairStartButton").click();
+        jest.advanceTimersByTime(3000);
+        await flushPromises();
+
+        expect(audioController.playIfNeeded).toHaveBeenCalledTimes(2);
+        expect(audioController.stop).not.toHaveBeenCalled();
+    });
+
+    test("daily limit on page load prevents Tap Repair music from starting", () => {
+        buildDOM();
+        document.getElementById("tapRepairDailyProgress").textContent = "5 / 5";
+        loadScript("tapRepair.js");
+
+        document.getElementById("tapRepairStartButton").click();
+
+        expect(audioController.playIfNeeded).not.toHaveBeenCalled();
     });
 
     test("beforeunload clears arena and stops audio", () => {

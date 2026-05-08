@@ -40,6 +40,18 @@
     padding: 1rem;
 }
 
+.slots-symbol-image {
+    width: min(92px, 100%);
+    height: 92px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.25));
+}
+
+.slots-reel-placeholder {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
 .matching-board {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -92,6 +104,13 @@
     transform: rotateY(180deg);
     background: linear-gradient(160deg, #ffc107, #ffda6a);
     color: #1c1c1c;
+}
+
+.matching-card-image {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
 }
 
 .trivia-question {
@@ -219,12 +238,22 @@
         font-size: 1rem;
     }
 
+    .slots-symbol-image {
+        width: 64px;
+        height: 64px;
+    }
+
     .matching-board {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .matching-card {
         min-height: 92px;
+    }
+
+    .matching-card-image {
+        width: 52px;
+        height: 52px;
     }
 
     .trivia-question {

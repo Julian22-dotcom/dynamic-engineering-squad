@@ -15,6 +15,7 @@
     const audioController = window.createMinigameAudio
         ? window.createMinigameAudio({ src: "/audio/minigames/trivia-theme.mp3", label: "trivia-theme" })
         : null;
+    let hasReachedDailyLimit = getHasReachedDailyLimit();
 
     if (muteButton && audioController) {
         muteButton.addEventListener("click", function () {
@@ -38,8 +39,12 @@
         }
 
         submitButton.disabled = true;
-        if (audioController) {
-            audioController.play();
+        if (audioController && !hasReachedDailyLimit) {
+            if (typeof audioController.playIfNeeded === "function") {
+                audioController.playIfNeeded();
+            } else {
+                audioController.play();
+            }
         }
 
         try {
@@ -65,6 +70,8 @@
             currentPointsElement.textContent = data.currentPoints;
             correctProgressElement.textContent = `${data.correctAnswers} / ${data.correctAnswersToWin}`;
             dailyProgressElement.textContent = `${data.dailyPointsEarned} / ${data.dailyPointsLimit}`;
+            hasReachedDailyLimit = data.hasReachedDailyLimit === true
+                || data.dailyPointsEarned >= data.dailyPointsLimit;
 
             if (data.wasCorrect) {
                 resultElement.className = "alert alert-success mb-4";
@@ -80,7 +87,16 @@
                 form.dataset.isComplete = "true";
                 questionHost.innerHTML = "<div class=\"trivia-complete-panel\">Round complete. Come back tomorrow for another reward run.</div>";
                 submitButton.disabled = true;
+
+                if (hasReachedDailyLimit && audioController) {
+                    audioController.stop();
+                }
+
                 return;
+            }
+
+            if (hasReachedDailyLimit && audioController) {
+                audioController.stop();
             }
 
             renderQuestion(data.nextQuestion);
@@ -197,5 +213,15 @@
     function getAntiForgeryToken() {
         const field = document.querySelector('input[name="__RequestVerificationToken"]');
         return field ? field.value : "";
+    }
+
+    function getHasReachedDailyLimit() {
+        const progressText = dailyProgressElement.textContent || "";
+        const match = progressText.match(/(\d+)\s*\/\s*(\d+)/);
+        if (!match) {
+            return false;
+        }
+
+        return Number(match[1]) >= Number(match[2]);
     }
 })();
