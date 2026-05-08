@@ -218,6 +218,16 @@
                         </div>
                     </div>
                 }
+                @if (!string.IsNullOrWhiteSpace(Model.ReportActivityProgressLabel))
+                {
+                    @* SCRUM-143: Shows a compact personal activity progress label based on submitted reports. *@
+                    <div class="mt-3 pt-3 border-top border-secondary">
+                        <div class="fw-semibold mb-2">Report Activity Progress</div>
+                        <span class="badge bg-info text-dark px-3 py-2">
+                            @Model.ReportActivityProgressLabel
+                        </span>
+                    </div>
+                }
             </div>
         </div>
 
