@@ -102,6 +102,19 @@ namespace InfrastructureApp.Services
                 .AsNoTracking()
                 .CountAsync(r => r.UserId == user.Id);
 
+            // SCRUM-142: Count this logged-in user's reports by status for the Activity Summary.
+            var reportStatusSummary = await _db.ReportIssue
+                .AsNoTracking()
+                .Where(r => r.UserId == user.Id)
+                .GroupBy(r => r.Status)
+                .Select(group => new DashboardReportStatusSummaryViewModel
+                {
+                    Status = group.Key,
+                    Count = group.Count()
+                })
+                .OrderBy(summary => summary.Status)
+                .ToListAsync();
+
             // SCRUM-137: Load only this logged-in user's submitted reports for the private Dashboard.
             var submittedReports = await _db.ReportIssue
                 .AsNoTracking()
@@ -135,6 +148,7 @@ namespace InfrastructureApp.Services
                 Username = user.UserName ?? "DemoUser",
                 Email = user.Email ?? "demo@example.com",
                 ReportsSubmitted = reportsSubmitted,
+                ReportStatusSummary = reportStatusSummary,
                 SubmittedReports = submittedReports,
                 Points = pointsRow?.CurrentPoints ?? 0,
                 AvatarKey = user.AvatarKey,
