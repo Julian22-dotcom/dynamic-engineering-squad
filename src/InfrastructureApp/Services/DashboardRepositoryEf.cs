@@ -94,6 +94,27 @@ namespace InfrastructureApp.Services
             };
         }
 
+        // SCRUM-143: Converts a user's submitted report count into a simple activity progress label.
+        private static string BuildReportActivityProgressLabel(int reportsSubmitted)
+        {
+            if (reportsSubmitted == 0)
+            {
+                return "New Reporter";
+            }
+
+            if (reportsSubmitted < 10)
+            {
+                return "Getting Started";
+            }
+
+            if (reportsSubmitted < 25)
+            {
+                return "Active Reporter";
+            }
+
+            return "Community Contributor";
+        }
+
         // Builds dashboard values using database data
         private async Task<DashboardViewModel> BuildDashboardForUserAsync(Users user)
         {
