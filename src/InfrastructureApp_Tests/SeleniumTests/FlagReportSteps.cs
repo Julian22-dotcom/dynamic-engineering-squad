@@ -121,7 +121,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             });
             WaitForFlagModalScript(wait);
             ScrollAndClick(flagBtn);
-            WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal'], .modal.show"), "flag modal");
+            WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal']"), "flag modal");
         }
 
         [Then(@"the ""Flag"" button in the modal should be disabled and show ""Already Flagged""")]
@@ -179,14 +179,14 @@ namespace InfrastructureApp_Tests.StepDefinitions
                     "bootstrap.Modal.getOrCreateInstance(document.getElementById('flagModal')).show();");
             }
 
-            WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal'], .modal.show"), "flag modal");
+            WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal']"), "flag modal");
         }
 
         [Then(@"I should be presented with categories ""(.*)"", ""(.*)"", ""(.*)""")]
         [Scope(Feature = "Flag Post")]
         public void ThenIShouldBePresentedWithCategories(string cat1, string cat2, string cat3)
         {
-            var body = WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal'], .modal.show"), "flag modal").Text;
+            var body = WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal']"), "flag modal").Text;
             Assert.Multiple(() =>
             {
                 Assert.That(body, Does.Contain(cat1));
