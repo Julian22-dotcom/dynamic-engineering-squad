@@ -17,6 +17,9 @@ namespace InfrastructureApp.ViewModels
         // SCRUM-142: Status counts for the logged-in user's submitted reports.
         public List<DashboardReportStatusSummaryViewModel> ReportStatusSummary { get; set; } = new();
 
+        // SCRUM-143: Activity progress label based on the logged-in user's report count.
+        public string ReportActivityProgressLabel { get; set; } = string.Empty;
+
         // SCRUM-137: Reports submitted by the logged-in user for the private Dashboard.
         public List<DashboardSubmittedReportViewModel> SubmittedReports { get; set; } = new();
 
