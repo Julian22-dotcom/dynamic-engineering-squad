@@ -42,3 +42,5 @@ This project is a gamified ASP.NET infrastructure reporting application defined 
 - [Sprint 1](./doc/sprint_retrospectives/sprint1_retrospective.md)
 - [Sprint 2](./doc/sprint_retrospectives/sprint2_retrospective.md)
 - [Sprint 3](./doc/sprint_retrospectives/sprint3_retrospective.md)
+- [Sprint 4](./doc/sprint_retrospectives/sprint4_retrospective.md)
+- [Sprint 5](./doc/sprint_retrospectives/sprint5_retrospective.md)
