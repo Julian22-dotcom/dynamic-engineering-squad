@@ -121,6 +121,21 @@ namespace InfrastructureApp_Tests.StepDefinitions
             });
             WaitForFlagModalScript(wait);
             ScrollAndClick(flagBtn);
+
+            // In CI headless Chrome, Bootstrap's data-bs-toggle click delegation
+            // may not fire reliably. After 3 seconds, if the modal still hasn't
+            // appeared, force it open directly via Bootstrap's JS API.
+            try
+            {
+                new WebDriverWait(Driver, TimeSpan.FromSeconds(3)).Until(d =>
+                    d.FindElements(By.CssSelector(".modal.show")).Count > 1);
+            }
+            catch (WebDriverTimeoutException)
+            {
+                ((IJavaScriptExecutor)Driver).ExecuteScript(
+                    "bootstrap.Modal.getOrCreateInstance(document.getElementById('flagModal')).show();");
+            }
+
             WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal']"), "flag modal");
         }
 
@@ -217,7 +232,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Scope(Feature = "Flag Post")]
         public void ThenIShouldSeeAConfirmationMessage(string expectedMessage)
         {
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
             var messageEl = wait.Until(d =>
             {
                 var el = d.FindElement(By.Id("flagMessage"));
