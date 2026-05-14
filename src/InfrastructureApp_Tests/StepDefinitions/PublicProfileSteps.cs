@@ -105,7 +105,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 IssueName = title,
                 Description = title,
                 Status = "Approved",
-                CreatedAt = DateTime.Parse(date, null, System.Globalization.DateTimeStyles.AssumeUniversal)
+                CreatedAt = DateTime.Parse(date)
             };
             db.ReportIssue.Add(report);
             await db.SaveChangesAsync();
