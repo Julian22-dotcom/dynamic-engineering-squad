@@ -49,7 +49,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             });
         }
 
-        [Given(@"a user ""(.*)"" exists with (\d+) approved reports")]
+        [Given(@"a user ""([^""]*)"" exists with (\d+) approved reports")]
         public async Task GivenAUserExistsWithApprovedReports(string username, int count)
         {
             using var scope = _factory.Services.CreateScope();
@@ -60,7 +60,9 @@ namespace InfrastructureApp_Tests.StepDefinitions
             {
                 Id = userId,
                 UserName = username,
+                NormalizedUserName = username.ToUpperInvariant(),
                 Email = $"{username}@example.com",
+                NormalizedEmail = $"{username}@example.com".ToUpperInvariant(),
                 EmailConfirmed = true
             });
             db.UserPoints.Add(new UserPoints { UserId = userId, CurrentPoints = 0, LifetimePoints = 0 });
@@ -79,7 +81,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             await db.SaveChangesAsync();
         }
 
-        [Given(@"a user ""(.*)"" exists with a report titled ""(.*)"" on ""(.*)""")]
+        [Given(@"a user ""([^""]*)"" exists with a report titled ""([^""]*)"" on ""([^""]*)""")]
         public async Task GivenAUserExistsWithAReportTitledOnDate(string username, string title, string date)
         {
             using var scope = _factory.Services.CreateScope();
@@ -90,7 +92,9 @@ namespace InfrastructureApp_Tests.StepDefinitions
             {
                 Id = userId,
                 UserName = username,
+                NormalizedUserName = username.ToUpperInvariant(),
                 Email = $"{username}@example.com",
+                NormalizedEmail = $"{username}@example.com".ToUpperInvariant(),
                 EmailConfirmed = true
             });
             db.UserPoints.Add(new UserPoints { UserId = userId, CurrentPoints = 0, LifetimePoints = 0 });
@@ -108,7 +112,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             _lastReportId = report.Id;
         }
 
-        [Given(@"a user ""(.*)"" exists with a report titled ""(.*)""")]
+        [Given(@"a user ""([^""]*)"" exists with a report titled ""([^""]*)""")]
         public async Task GivenAUserExistsWithAReportTitled(string username, string title)
         {
             using var scope = _factory.Services.CreateScope();
@@ -119,7 +123,9 @@ namespace InfrastructureApp_Tests.StepDefinitions
             {
                 Id = userId,
                 UserName = username,
+                NormalizedUserName = username.ToUpperInvariant(),
                 Email = $"{username}@example.com",
+                NormalizedEmail = $"{username}@example.com".ToUpperInvariant(),
                 EmailConfirmed = true
             });
             db.UserPoints.Add(new UserPoints { UserId = userId, CurrentPoints = 0, LifetimePoints = 0 });
@@ -137,7 +143,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             _lastReportId = report.Id;
         }
 
-        [Given(@"a user ""(.*)"" exists with email ""(.*)""")]
+        [Given(@"a user ""([^""]*)"" exists with email ""([^""]*)""")]
         public async Task GivenAUserExistsWithEmail(string username, string email)
         {
             using var scope = _factory.Services.CreateScope();
@@ -148,14 +154,16 @@ namespace InfrastructureApp_Tests.StepDefinitions
             {
                 Id = userId,
                 UserName = username,
+                NormalizedUserName = username.ToUpperInvariant(),
                 Email = email,
+                NormalizedEmail = email.ToUpperInvariant(),
                 EmailConfirmed = true
             });
             db.UserPoints.Add(new UserPoints { UserId = userId, CurrentPoints = 0, LifetimePoints = 0 });
             await db.SaveChangesAsync();
         }
 
-        [Given(@"a user ""(.*)"" exists with no reports")]
+        [Given(@"a user ""([^""]*)"" exists with no reports")]
         public async Task GivenAUserExistsWithNoReports(string username)
         {
             using var scope = _factory.Services.CreateScope();
@@ -166,7 +174,9 @@ namespace InfrastructureApp_Tests.StepDefinitions
             {
                 Id = userId,
                 UserName = username,
+                NormalizedUserName = username.ToUpperInvariant(),
                 Email = $"{username}@example.com",
+                NormalizedEmail = $"{username}@example.com".ToUpperInvariant(),
                 EmailConfirmed = true
             });
             db.UserPoints.Add(new UserPoints { UserId = userId, CurrentPoints = 0, LifetimePoints = 0 });
