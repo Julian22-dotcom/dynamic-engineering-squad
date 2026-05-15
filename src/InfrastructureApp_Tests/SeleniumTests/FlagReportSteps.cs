@@ -124,7 +124,8 @@ namespace InfrastructureApp_Tests.StepDefinitions
 
             // In CI headless Chrome, Bootstrap's data-bs-toggle click delegation
             // may not fire reliably. After 3 seconds, if the modal still hasn't
-            // appeared, force it open directly via Bootstrap's JS API.
+            // appeared, call showFlagModalFromButton so that the flagReportId
+            // hidden input is set correctly before showing the modal.
             try
             {
                 new WebDriverWait(Driver, TimeSpan.FromSeconds(3)).Until(d =>
@@ -133,7 +134,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             catch (WebDriverTimeoutException)
             {
                 ((IJavaScriptExecutor)Driver).ExecuteScript(
-                    "bootstrap.Modal.getOrCreateInstance(document.getElementById('flagModal')).show();");
+                    "window.showFlagModalFromButton(document.getElementById('modalFlagBtn'));");
             }
 
             WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal']"), "flag modal");
@@ -182,7 +183,8 @@ namespace InfrastructureApp_Tests.StepDefinitions
 
             // In CI headless Chrome, Bootstrap's data-bs-toggle click delegation
             // may not fire reliably. After 3 seconds, if the modal still hasn't
-            // appeared, force it open directly via Bootstrap's JS API.
+            // appeared, call showFlagModalFromButton so that the flagReportId
+            // hidden input is set correctly before showing the modal.
             try
             {
                 new WebDriverWait(Driver, TimeSpan.FromSeconds(3)).Until(d =>
@@ -191,7 +193,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             catch (WebDriverTimeoutException)
             {
                 ((IJavaScriptExecutor)Driver).ExecuteScript(
-                    "bootstrap.Modal.getOrCreateInstance(document.getElementById('flagModal')).show();");
+                    "window.showFlagModalFromButton(document.getElementById('flagBtn'));");
             }
 
             WaitForVisibleModal(By.CssSelector("#flagModal, [data-testid='flag-modal']"), "flag modal");
