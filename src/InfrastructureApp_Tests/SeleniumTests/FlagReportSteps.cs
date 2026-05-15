@@ -226,7 +226,19 @@ namespace InfrastructureApp_Tests.StepDefinitions
         public void WhenIClickSubmitReport()
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
-            var submitBtn = wait.Until(d => d.FindElement(By.Id("submitFlagBtn")));
+            wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
+
+            // Ensure the flag modal is actually open before trying to click submit.
+            wait.Until(d =>
+                d.FindElements(By.CssSelector("#flagModal.show")).Count > 0
+                || d.FindElements(By.CssSelector("#flagModal[aria-modal='true']")).Count > 0);
+
+            var submitBtn = wait.Until(d =>
+            {
+                var btn = d.FindElement(By.Id("submitFlagBtn"));
+                return btn.Displayed && btn.Enabled ? btn : null;
+            });
+
             ScrollAndClick(submitBtn);
         }
 
@@ -235,12 +247,22 @@ namespace InfrastructureApp_Tests.StepDefinitions
         public void ThenIShouldSeeAConfirmationMessage(string expectedMessage)
         {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(45));
-            var messageEl = wait.Until(d =>
+            try
             {
-                var el = d.FindElement(By.Id("flagMessage"));
-                return el.Displayed && !string.IsNullOrEmpty(el.Text) && el.Text.Contains(expectedMessage) ? el : null;
-            });
-            Assert.That(messageEl, Is.Not.Null);
+                var messageEl = wait.Until(d =>
+                {
+                    var el = d.FindElement(By.Id("flagMessage"));
+                    return el.Displayed && !string.IsNullOrEmpty(el.Text) && el.Text.Contains(expectedMessage) ? el : null;
+                });
+                Assert.That(messageEl, Is.Not.Null);
+            }
+            catch (WebDriverTimeoutException ex)
+            {
+                WriteFlagConfirmDiagnostics(expectedMessage);
+                throw new AssertionException(
+                    $"Timed out waiting for flag confirmation message. See test output for diagnostics.",
+                    ex);
+            }
         }
 
         [Then(@"the reporting interface should close")]
@@ -423,6 +445,60 @@ namespace InfrastructureApp_Tests.StepDefinitions
             wait.Until(d =>
                 ((IJavaScriptExecutor)d).ExecuteScript("return typeof window.openLatestReportModal === 'function';")
                     is true);
+        }
+
+        private void WriteFlagConfirmDiagnostics(string expectedMessage)
+        {
+            TestContext.WriteLine($"[FlagConfirmDiag] Expected: '{expectedMessage}'");
+            TestContext.WriteLine($"[FlagConfirmDiag] URL: {Driver.Url}");
+
+            try
+            {
+                var js = (IJavaScriptExecutor)Driver;
+                TestContext.WriteLine($"[FlagConfirmDiag] #flagMessage text: {js.ExecuteScript("var e=document.getElementById('flagMessage'); return e?e.textContent:'NOT FOUND';")}");
+                TestContext.WriteLine($"[FlagConfirmDiag] #flagMessage class: {js.ExecuteScript("var e=document.getElementById('flagMessage'); return e?e.className:'NOT FOUND';")}");
+                TestContext.WriteLine($"[FlagConfirmDiag] #flagMessage display: {js.ExecuteScript("var e=document.getElementById('flagMessage'); return e?window.getComputedStyle(e).display:'NOT FOUND';")}");
+                TestContext.WriteLine($"[FlagConfirmDiag] #flagReportId value: '{js.ExecuteScript("var e=document.getElementById('flagReportId'); return e?e.value:'NOT FOUND';")}' ");
+                TestContext.WriteLine($"[FlagConfirmDiag] #submitFlagBtn disabled: {js.ExecuteScript("var e=document.getElementById('submitFlagBtn'); return e?e.disabled:'NOT FOUND';")}");
+                TestContext.WriteLine($"[FlagConfirmDiag] #submitFlagBtn text: {js.ExecuteScript("var e=document.getElementById('submitFlagBtn'); return e?e.textContent.trim():'NOT FOUND';")}");
+                TestContext.WriteLine($"[FlagConfirmDiag] #flagModal class: {js.ExecuteScript("var e=document.getElementById('flagModal'); return e?e.className:'NOT FOUND';")}");
+                TestContext.WriteLine($"[FlagConfirmDiag] checked category: {js.ExecuteScript("var e=document.querySelector('input[name=\"category\"]:checked'); return e?e.value:'NONE';")}");
+            }
+            catch (Exception jsEx)
+            {
+                TestContext.WriteLine($"[FlagConfirmDiag] JS eval failed: {jsEx.Message}");
+            }
+
+            try
+            {
+                if (Driver is ChromeDriver chromeDriver)
+                {
+                    foreach (var entry in chromeDriver.Manage().Logs.GetLog(LogType.Browser))
+                    {
+                        TestContext.WriteLine($"[FlagConfirmDiag] Browser [{entry.Level}]: {entry.Message}");
+                    }
+                }
+            }
+            catch (Exception logEx)
+            {
+                TestContext.WriteLine($"[FlagConfirmDiag] Browser log capture failed: {logEx.Message}");
+            }
+
+            try
+            {
+                if (Driver is ITakesScreenshot ss)
+                {
+                    var path = Path.Combine(
+                        TestContext.CurrentContext.WorkDirectory,
+                        $"flag-confirm-timeout-{DateTime.UtcNow:yyyyMMddHHmmssfff}.png");
+                    ss.GetScreenshot().SaveAsFile(path);
+                    TestContext.WriteLine($"[FlagConfirmDiag] Screenshot: {path}");
+                }
+            }
+            catch (Exception screenshotEx)
+            {
+                TestContext.WriteLine($"[FlagConfirmDiag] Screenshot failed: {screenshotEx.Message}");
+            }
         }
     }
 }
