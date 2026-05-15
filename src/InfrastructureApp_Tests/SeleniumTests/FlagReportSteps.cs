@@ -233,6 +233,13 @@ namespace InfrastructureApp_Tests.StepDefinitions
                 d.FindElements(By.CssSelector("#flagModal.show")).Count > 0
                 || d.FindElements(By.CssSelector("#flagModal[aria-modal='true']")).Count > 0);
 
+            // Ensure flagReportId is set — if empty the submit handler silently returns.
+            var reportIdValue = ((IJavaScriptExecutor)Driver)
+                .ExecuteScript("var e=document.getElementById('flagReportId'); return e ? e.value : '';")
+                ?.ToString() ?? string.Empty;
+            Assert.That(reportIdValue, Is.Not.Empty,
+                "flagReportId is empty — showFlagModalFromButton was not called with a button that has data-report-id set.");
+
             var submitBtn = wait.Until(d =>
             {
                 var btn = d.FindElement(By.Id("submitFlagBtn"));
