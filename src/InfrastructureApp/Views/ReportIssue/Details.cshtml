@@ -99,7 +99,18 @@
             </p>
         }
         <p><strong>Created:</strong> @Model.CreatedAt</p>
-        <p><strong>Reported by:</strong> @reporterDisplay</p>
+        <p>
+            <strong>Reported by:</strong>
+            @if (Model.User != null && !string.IsNullOrWhiteSpace(Model.User.UserName))
+            {
+                <a href="/Dashboard?username=@Model.User.UserName"
+                   data-testid="reporter-profile-link">@reporterDisplay</a>
+            }
+            else
+            {
+                @reporterDisplay
+            }
+        </p>
         <p>
             <strong>Description:</strong><br />
             <span class="report-text-wrap text-break">@Model.Description</span>
