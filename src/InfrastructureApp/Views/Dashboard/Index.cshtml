@@ -270,9 +270,15 @@
             </div>
         }
 
-        @if (!Model.IsOwnDashboard)
-        {
-            <div class="card bg-dark text-light border-secondary mt-3">
+    </div>
+
+</div>
+
+@if (!Model.IsOwnDashboard)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark text-light border-secondary mt-1">
                 <div class="card-header border-secondary">
                     <i class="fa-solid fa-flag me-2" style="color: var(--safety-orange);"></i>
                     Contribution Feed
@@ -330,7 +336,6 @@
                     }
                 </div>
             </div>
-        }
+        </div>
     </div>
-
-</div>
+}
