@@ -2,36 +2,564 @@
     ViewData["Title"] = "Report Issue";
 }
 
-<div class="container py-4" style="max-width: 680px;">
-    <div class="text-center mb-4">
-        <h1 class="display-6"><i class="fa-solid fa-triangle-exclamation me-2 text-safety-orange"></i>Report an Infrastructure Issue</h1>
-        <p class="lead text-muted">
-            Submit a pothole, broken sign, damaged sidewalk, streetlight issue, or other public hazard.
+@* Page-scoped styles for the sticky slide experience. *@
+<style>
+    .report-landing {
+        --report-bg: #07111f;
+        --report-surface: rgba(8, 20, 36, 0.72);
+        --report-surface-strong: rgba(6, 16, 30, 0.88);
+        --report-border: rgba(255, 255, 255, 0.14);
+        --report-text: #f4f7fb;
+        --report-muted: rgba(244, 247, 251, 0.78);
+        --report-accent: #ff8c42;
+        --report-accent-soft: #ffd6b5;
+        --report-shadow: 0 30px 70px rgba(2, 10, 20, 0.35);
+        background:
+            radial-gradient(circle at top left, rgba(86, 143, 255, 0.28), transparent 32%),
+            radial-gradient(circle at top right, rgba(255, 140, 66, 0.2), transparent 26%),
+            linear-gradient(180deg, #0a1728 0%, #10233a 50%, #08111f 100%);
+        color: var(--report-text);
+        margin-inline: calc(50% - 50vw);
+        min-height: 100vh;
+        overflow-x: clip;
+        position: relative;
+        scroll-snap-type: y mandatory;
+    }
+
+    .report-landing::before {
+        background:
+            linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 42%),
+            linear-gradient(315deg, rgba(255, 255, 255, 0.03), transparent 36%);
+        content: "";
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+    }
+
+    .report-landing__intro {
+        margin: 0 auto;
+        max-width: 1100px;
+        padding: 2rem 1.5rem 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .report-landing__eyebrow {
+        align-items: center;
+        color: var(--report-accent-soft);
+        display: inline-flex;
+        font-size: 0.9rem;
+        font-weight: 700;
+        gap: 0.55rem;
+        letter-spacing: 0.12em;
+        margin-bottom: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    .report-landing__intro h1 {
+        font-size: clamp(2.35rem, 4.8vw, 4.9rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 0.95;
+        margin-bottom: 1rem;
+        max-width: 10ch;
+    }
+
+    .report-landing__intro p {
+        color: var(--report-muted);
+        font-size: clamp(1rem, 1.55vw, 1.2rem);
+        margin-bottom: 0;
+        max-width: 48rem;
+    }
+
+    .report-slides {
+        position: relative;
+        z-index: 1;
+    }
+
+    .report-slide {
+        min-height: 100vh;
+        position: sticky;
+        top: 0;
+        scroll-snap-align: start;
+    }
+
+    .report-slide__inner,
+    .report-cta__inner {
+        align-items: center;
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 0.95fr);
+        margin: 0 auto;
+        max-width: 1200px;
+        min-height: 100vh;
+        padding: 6rem 1.5rem;
+    }
+
+    .report-slide__content {
+        backdrop-filter: blur(20px);
+        background: var(--report-surface);
+        border: 1px solid var(--report-border);
+        border-radius: 28px;
+        box-shadow: var(--report-shadow);
+        padding: clamp(1.5rem, 3vw, 3rem);
+    }
+
+    .report-slide__step {
+        color: var(--report-accent-soft);
+        display: inline-flex;
+        font-size: 0.92rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+    }
+
+    .report-slide__content h2 {
+        font-size: clamp(2rem, 4vw, 3.6rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 1rem;
+    }
+
+    .report-slide__description {
+        color: var(--report-muted);
+        font-size: clamp(1rem, 1.5vw, 1.15rem);
+        margin-bottom: 1.5rem;
+        max-width: 34rem;
+    }
+
+    .report-slide__instruction {
+        align-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        display: inline-flex;
+        gap: 0.85rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .report-slide__instruction i {
+        color: var(--report-accent);
+        font-size: 1.1rem;
+    }
+
+    .report-slide__instruction strong {
+        display: block;
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.15rem;
+        text-transform: uppercase;
+    }
+
+    .report-slide__instruction span {
+        color: var(--report-text);
+        font-size: 1rem;
+    }
+
+    .report-slide__visual {
+        justify-self: stretch;
+    }
+
+    .report-slide__frame {
+        backdrop-filter: blur(16px);
+        background: var(--report-surface-strong);
+        border: 1px solid var(--report-border);
+        border-radius: 32px;
+        box-shadow: var(--report-shadow);
+        overflow: hidden;
+        position: relative;
+        transform: translateY(0);
+        transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+
+    .report-slide__frame:hover,
+    .report-slide__frame:focus-within {
+        border-color: rgba(255, 255, 255, 0.24);
+        box-shadow: 0 36px 80px rgba(2, 10, 20, 0.45);
+        transform: translateY(-6px);
+    }
+
+    .report-slide__image {
+        display: block;
+        height: min(60vh, 520px);
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .report-slide__caption {
+        align-items: center;
+        color: var(--report-muted);
+        display: flex;
+        font-size: 0.95rem;
+        gap: 0.65rem;
+        padding: 1rem 1.2rem 1.2rem;
+    }
+
+    .report-slide__caption i {
+        color: var(--report-accent);
+    }
+
+    .report-slide--one { z-index: 1; }
+    .report-slide--two { z-index: 2; }
+    .report-slide--three { z-index: 3; }
+    .report-slide--four { z-index: 4; }
+    .report-slide--five { z-index: 5; }
+
+    .report-cta {
+        min-height: 100vh;
+        position: relative;
+        scroll-snap-align: start;
+        z-index: 6;
+    }
+
+    .report-cta__inner {
+        grid-template-columns: minmax(0, 780px);
+        justify-content: center;
+        text-align: center;
+    }
+
+    .report-cta__card {
+        backdrop-filter: blur(24px);
+        background: rgba(6, 16, 30, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 32px;
+        box-shadow: var(--report-shadow);
+        padding: clamp(2rem, 4vw, 4rem);
+    }
+
+    .report-cta__icon {
+        align-items: center;
+        background: rgba(255, 140, 66, 0.14);
+        border: 1px solid rgba(255, 140, 66, 0.34);
+        border-radius: 999px;
+        color: var(--report-accent);
+        display: inline-flex;
+        font-size: 1.4rem;
+        height: 4rem;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        width: 4rem;
+    }
+
+    .report-cta__card h2 {
+        font-size: clamp(2rem, 4vw, 3.8rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        margin-bottom: 1rem;
+    }
+
+    .report-cta__card p {
+        color: var(--report-muted);
+        font-size: clamp(1rem, 1.5vw, 1.15rem);
+        margin: 0 auto 2rem;
+        max-width: 38rem;
+    }
+
+    .report-cta__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .report-landing .report-action-btn {
+        border-radius: 999px;
+        font-size: 1rem;
+        font-weight: 700;
+        min-width: 200px;
+        padding: 0.95rem 1.6rem;
+        transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease, border-color 220ms ease;
+    }
+
+    .report-landing .report-action-btn:hover,
+    .report-landing .report-action-btn:focus-visible {
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
+        transform: translateY(-3px);
+    }
+
+    .report-landing .report-action-btn--primary {
+        background: linear-gradient(135deg, #ff9f5a 0%, #ff7a2f 100%);
+        border: none;
+        color: #101010;
+    }
+
+    .report-landing .report-action-btn--primary:hover,
+    .report-landing .report-action-btn--primary:focus-visible {
+        background: linear-gradient(135deg, #ffb57c 0%, #ff8d48 100%);
+        color: #101010;
+    }
+
+    .report-landing .report-action-btn--secondary {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: var(--report-text);
+    }
+
+    .report-landing .report-action-btn--secondary:hover,
+    .report-landing .report-action-btn--secondary:focus-visible {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.26);
+        color: var(--report-text);
+    }
+
+    @@media (max-width: 991.98px) {
+        .report-slide__inner,
+        .report-cta__inner {
+            grid-template-columns: 1fr;
+            padding: 4.5rem 1rem;
+        }
+
+        .report-slide__visual {
+            order: -1;
+        }
+
+        .report-slide__image {
+            height: min(42vh, 360px);
+        }
+
+        .report-landing__intro {
+            padding: 1.5rem 1rem 0;
+        }
+    }
+
+    @@media (max-width: 575.98px) {
+        .report-slide__content,
+        .report-cta__card {
+            border-radius: 24px;
+            padding: 1.35rem;
+        }
+
+        .report-slide__frame {
+            border-radius: 24px;
+        }
+
+        .report-slide__instruction {
+            align-items: flex-start;
+            display: flex;
+        }
+
+        .report-landing .report-action-btn {
+            min-width: 100%;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .report-slide__frame,
+        .report-landing .report-action-btn {
+            transition: none;
+        }
+
+        .report-landing {
+            scroll-behavior: auto;
+        }
+    }
+</style>
+
+<main class="report-landing" aria-labelledby="report-landing-title">
+    @* Intro header that sets the purpose of the landing page. *@
+    <section class="report-landing__intro">
+        <p class="report-landing__eyebrow">
+            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+            Report Issue Guide
         </p>
-    </div>
+        <h1 id="report-landing-title">Report an Infrastructure Issue</h1>
+        <p>
+            Scroll through the quick submission walkthrough to see exactly how to document potholes,
+            damaged sidewalks, broken signs, lighting problems, and other public hazards.
+        </p>
+    </section>
 
-    <div class="report-card mb-4">
-        <h2 class="h5"><i class="fa-solid fa-list-ol me-2"></i>How to submit an issue</h2>
-        <ol class="mb-0">
-            <li>Click <strong>Report an Issue</strong> below.</li>
-            <li>Add a clear description of the issue.</li>
-            <li>Add an image.</li>
-            <li>Select the location of the issue on the map.</li>
-            <li>Press <strong>Submit</strong> to finish and earn points.</li>
-        </ol>
-    </div>
+    @* Full-screen sticky instructional slides that explain one reporting step at a time. *@
+    <section class="report-slides" aria-label="How to submit a report">
+        <article class="report-slide report-slide--one" aria-labelledby="report-slide-1-title">
+            <div class="report-slide__inner">
+                <div class="report-slide__content">
+                    <span class="report-slide__step">Step 1 of 5</span>
+                    <h2 id="report-slide-1-title">Report an Infrastructure Issue</h2>
+                    <p class="report-slide__description">
+                        Start the reporting flow when you spot a problem in your area and are ready to help
+                        document it for review.
+                    </p>
+                    <div class="report-slide__instruction" role="note" aria-label="Instruction for step one">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                        <div>
+                            <strong>Instruction</strong>
+                            <span>Click Report an Issue below.</span>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="row g-3 justify-content-center">
-        <div class="col-12 col-md-6">
-            <a class="btn report-action-btn report-action-btn--primary w-100" asp-controller="ReportIssue" asp-action="Create" aria-label="Go to the issue submission form">
-                <i class="fa-solid fa-circle-exclamation me-2"></i>Report an Issue
-            </a>
+                <div class="report-slide__visual">
+                    <figure class="report-slide__frame mb-0">
+                        <img class="report-slide__image"
+                             src="https://placehold.co/960x1080/17324f/f4f7fb?text=Infrastructure+Reporting+Hero"
+                             alt="Placeholder illustration showing a person reporting a city infrastructure issue with a phone">
+                        <figcaption class="report-slide__caption">
+                            <i class="fa-solid fa-road" aria-hidden="true"></i>
+                            Capture hazards that affect streets, sidewalks, signs, and lighting.
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </article>
+
+        <article class="report-slide report-slide--two" aria-labelledby="report-slide-2-title">
+            <div class="report-slide__inner">
+                <div class="report-slide__content">
+                    <span class="report-slide__step">Step 2 of 5</span>
+                    <h2 id="report-slide-2-title">Describe the Problem</h2>
+                    <p class="report-slide__description">
+                        A concise, specific description gives reviewers the context they need to understand
+                        what is wrong before they open the full report.
+                    </p>
+                    <div class="report-slide__instruction" role="note" aria-label="Instruction for step two">
+                        <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                        <div>
+                            <strong>Instruction</strong>
+                            <span>Add a clear description of the issue.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-slide__visual">
+                    <figure class="report-slide__frame mb-0">
+                        <img class="report-slide__image"
+                             src="https://placehold.co/960x1080/21466d/f4f7fb?text=Describe+the+Problem"
+                             alt="Placeholder illustration for writing a clear description of an infrastructure issue">
+                        <figcaption class="report-slide__caption">
+                            <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+                            Explain what is damaged, where it is, and why it matters.
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </article>
+
+        <article class="report-slide report-slide--three" aria-labelledby="report-slide-3-title">
+            <div class="report-slide__inner">
+                <div class="report-slide__content">
+                    <span class="report-slide__step">Step 3 of 5</span>
+                    <h2 id="report-slide-3-title">Upload a Photo</h2>
+                    <p class="report-slide__description">
+                        A strong image helps verify the condition quickly and makes the report easier to
+                        review and prioritize.
+                    </p>
+                    <div class="report-slide__instruction" role="note" aria-label="Instruction for step three">
+                        <i class="fa-solid fa-camera" aria-hidden="true"></i>
+                        <div>
+                            <strong>Instruction</strong>
+                            <span>Add an image.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-slide__visual">
+                    <figure class="report-slide__frame mb-0">
+                        <img class="report-slide__image"
+                             src="https://placehold.co/960x1080/2c5b84/f4f7fb?text=Upload+a+Photo"
+                             alt="Placeholder illustration showing a photo upload step for an issue report">
+                        <figcaption class="report-slide__caption">
+                            <i class="fa-solid fa-image" aria-hidden="true"></i>
+                            Use a clear photo that shows the issue from a safe viewpoint.
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </article>
+
+        <article class="report-slide report-slide--four" aria-labelledby="report-slide-4-title">
+            <div class="report-slide__inner">
+                <div class="report-slide__content">
+                    <span class="report-slide__step">Step 4 of 5</span>
+                    <h2 id="report-slide-4-title">Pin the Location</h2>
+                    <p class="report-slide__description">
+                        Accurate location data keeps city staff from wasting time and helps them connect your
+                        report to the exact place that needs attention.
+                    </p>
+                    <div class="report-slide__instruction" role="note" aria-label="Instruction for step four">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                        <div>
+                            <strong>Instruction</strong>
+                            <span>Select the location of the issue on the map.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-slide__visual">
+                    <figure class="report-slide__frame mb-0">
+                        <img class="report-slide__image"
+                             src="https://placehold.co/960x1080/356f98/f4f7fb?text=Pin+the+Location"
+                             alt="Placeholder illustration showing a map marker being placed for an infrastructure issue">
+                        <figcaption class="report-slide__caption">
+                            <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+                            Drop the pin where the problem is actually located.
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </article>
+
+        <article class="report-slide report-slide--five" aria-labelledby="report-slide-5-title">
+            <div class="report-slide__inner">
+                <div class="report-slide__content">
+                    <span class="report-slide__step">Step 5 of 5</span>
+                    <h2 id="report-slide-5-title">Earn Points</h2>
+                    <p class="report-slide__description">
+                        Finish the form to send your report for moderation and receive points for helping
+                        improve the community.
+                    </p>
+                    <div class="report-slide__instruction" role="note" aria-label="Instruction for step five">
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                        <div>
+                            <strong>Instruction</strong>
+                            <span>Press Submit to finish and earn points.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-slide__visual">
+                    <figure class="report-slide__frame mb-0">
+                        <img class="report-slide__image"
+                             src="https://placehold.co/960x1080/407fa7/f4f7fb?text=Earn+Points"
+                             alt="Placeholder illustration showing a completed issue report earning reward points">
+                        <figcaption class="report-slide__caption">
+                            <i class="fa-solid fa-award" aria-hidden="true"></i>
+                            Submission completes the report and contributes to your points total.
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    @* Final call-to-action section that preserves the existing MVC routes and actions. *@
+    <section class="report-cta" aria-labelledby="report-cta-title">
+        <div class="report-cta__inner">
+            <div class="report-cta__card">
+                <div class="report-cta__icon" aria-hidden="true">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+                <h2 id="report-cta-title">Ready to submit a report?</h2>
+                <p>
+                    Move into the reporting form to document the issue, or return home if you are not ready yet.
+                </p>
+                <div class="report-cta__actions">
+                    <a class="btn report-action-btn report-action-btn--primary"
+                       asp-controller="ReportIssue"
+                       asp-action="Create"
+                       aria-label="Go to the issue submission form">
+                        <i class="fa-solid fa-circle-exclamation me-2" aria-hidden="true"></i>Report an Issue
+                    </a>
+                    <a class="btn report-action-btn report-action-btn--secondary"
+                       asp-controller="Home"
+                       asp-action="Index"
+                       aria-label="Return to the home page">
+                        <i class="fa-solid fa-arrow-left me-2" aria-hidden="true"></i>Back Home
+                    </a>
+                </div>
+            </div>
         </div>
-
-        <div class="col-12 col-md-3">
-            <a class="btn report-action-btn w-100" asp-controller="Home" asp-action="Index" aria-label="Return to the home page">
-                <i class="fa-solid fa-arrow-left me-1"></i>Back to Home
-            </a>
-        </div>
-    </div>
-</div>
+    </section>
+</main>
