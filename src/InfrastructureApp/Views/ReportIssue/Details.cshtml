@@ -80,11 +80,7 @@
         </div>
     }
 
-<<<<<<< HEAD
-    <div class="report-card">
-=======
     <div class="report-details-card">
->>>>>>> f75aa23b418b172247cfd104e264cad7af6ece55
         @{
             var severityClass = Model.SeverityStatus switch
             {
@@ -96,74 +92,6 @@
             };
         }
 
-<<<<<<< HEAD
-        <!-- Status + severity badges -->
-        <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
-            <span class="badge bg-primary px-3 py-2 fs-6">Status: @Model.Status</span>
-            <span class="badge @severityClass px-3 py-2 fs-6" data-testid="severity-status">
-                Severity: @Model.SeverityStatus
-            </span>
-        </div>
-
-        <!-- Two-column: metadata left, image right -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-6">
-                <dl class="row mb-3">
-                    <dt class="col-sm-4 text-muted fw-normal">Reported</dt>
-                    <dd class="col-sm-8">@Model.CreatedAt.ToString("MMM d, yyyy h:mm tt")</dd>
-
-                    <dt class="col-sm-4 text-muted fw-normal">Reported by</dt>
-                    <dd class="col-sm-8">@reporterDisplay</dd>
-
-                    <dt class="col-sm-4 text-muted fw-normal">Location</dt>
-                    <dd class="col-sm-8 small">@Model.Latitude, @Model.Longitude</dd>
-                </dl>
-
-                <p class="text-muted small mb-1">Description</p>
-                <p class="report-text-wrap text-break mb-3">@Model.Description</p>
-
-                <p class="text-muted small mb-1">Severity Reason</p>
-                @if (!string.IsNullOrWhiteSpace(Model.SeverityReason))
-                {
-                    <p data-testid="severity-reason" class="mb-0">@Model.SeverityReason</p>
-                }
-                else
-                {
-                    <p class="text-muted mb-0"><span data-testid="severity-reason">Not available.</span></p>
-                }
-            </div>
-
-            <div class="col-md-6">
-                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-                {
-                    <img src="@Model.ImageUrl"
-                         class="img-fluid rounded w-100"
-                         style="max-height:300px; object-fit:cover;"
-                         alt="Uploaded issue photo"
-                         onerror="this.classList.add('d-none'); document.getElementById('detailsImageFallback').classList.remove('d-none');" />
-                    <p id="detailsImageFallback" class="text-muted d-none mt-2">
-                        Image could not be loaded.
-                    </p>
-                }
-                else
-                {
-                    <div class="d-flex align-items-center justify-content-center rounded text-muted"
-                         style="min-height:180px; background:rgba(72,72,72,0.3);">
-                        <div class="text-center">
-                            <i class="fa-solid fa-image fa-2x mb-2 d-block"></i>
-                            <small>No image provided</small>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- Map: full width -->
-        <p class="text-muted small mb-2">Location on map</p>
-        <div id="submittedMap" data-lat="@Model.Latitude" data-lng="@Model.Longitude"
-             style="height:320px; width:100%; border-radius:12px;">
-        </div>
-=======
         <div class="report-details-grid">
             <div class="report-details-meta">
                 <div class="report-details-meta-card">
@@ -277,7 +205,6 @@
                 </div>
             </div>
         </div>
->>>>>>> f75aa23b418b172247cfd104e264cad7af6ece55
     </div>
 
     <!-- Status Timeline -->
@@ -421,29 +348,6 @@
                 </a>
             }
 
-<<<<<<< HEAD
-        <!-- Flag -->
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <button type="button"
-                    id="flagBtn"
-                    data-testid="flag-button"
-                    onclick="window.showFlagModalFromButton?.(this)"
-                    class="btn @(ViewBag.UserHasFlagged ? "btn-secondary" : "btn-outline-danger") fw-bold flex-fill py-2"
-                    data-report-id="@Model.Id"
-                    @(ViewBag.UserHasFlagged ? "disabled" : "")>
-                <i class="fa-solid fa-flag me-1"></i>
-                @(ViewBag.UserHasFlagged ? "Already Flagged" : "Flag Inappropriate Content")
-            </button>
-        }
-        else
-        {
-            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-danger fw-bold flex-fill py-2 text-center">
-                <i class="fa-solid fa-flag me-1"></i>
-                Flag Inappropriate Content
-            </a>
-        }
-=======
             <!-- Verify -->
             @if (Model.Status == "Approved")
             {
@@ -474,7 +378,6 @@
             {
                 <div class="flex-fill"></div>
             }
->>>>>>> f75aa23b418b172247cfd104e264cad7af6ece55
 
             <!-- Flag -->
             @if (User.Identity?.IsAuthenticated == true)
@@ -482,9 +385,6 @@
                 <button type="button"
                         id="flagBtn"
                         data-testid="flag-button"
-                        data-bs-toggle="modal"
-                        data-bs-target="#flagModal"
-                        aria-controls="flagModal"
                         onclick="window.showFlagModalFromButton?.(this)"
                         class="btn @(ViewBag.UserHasFlagged ? "btn-secondary" : "btn-outline-danger") fw-bold flex-fill py-2"
                         data-report-id="@Model.Id"
@@ -590,5 +490,5 @@
         {
             <text><script>setTimeout(launchConfetti, 500);</script></text>
         }
-    
+
 }
