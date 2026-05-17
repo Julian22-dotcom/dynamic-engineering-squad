@@ -207,6 +207,42 @@
         </div>
     </div>
 
+    <!-- Status Timeline -->
+    @{
+        var statusHistory = ViewBag.StatusHistory as List<InfrastructureApp.ViewModels.ReportStatusHistoryViewModel>;
+    }
+    @if (statusHistory != null && statusHistory.Count > 0)
+    {
+        <div class="report-card mt-3">
+            <h2 class="h6 text-muted text-uppercase mb-3 mb-0">
+                <i class="fa-solid fa-clock me-1"></i> Status Timeline
+            </h2>
+            <div class="d-flex flex-column gap-3 mt-3">
+                @foreach (var entry in statusHistory)
+                {
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="mt-1 flex-shrink-0">
+                            <i class="fa-solid fa-circle @(entry.IsCurrent ? "text-safety-orange" : "text-muted")"
+                               style="font-size:0.6rem;"></i>
+                        </div>
+                        <div>
+                            <div>
+                                <span class="@(entry.IsCurrent ? "fw-bold" : "")">@entry.Status</span>
+                                @if (entry.IsCurrent)
+                                {
+                                    <span class="badge bg-primary ms-2 px-2 py-1 small">Current</span>
+                                }
+                            </div>
+                            <div class="text-muted small">
+                                @entry.ChangedAt.ToString("MMM d, yyyy h:mm tt") &middot; by @entry.ChangedByDisplayName
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
     <!-- Admin actions -->
     @if (User.IsInRole("Admin"))
     {
@@ -349,9 +385,6 @@
                 <button type="button"
                         id="flagBtn"
                         data-testid="flag-button"
-                        data-bs-toggle="modal"
-                        data-bs-target="#flagModal"
-                        aria-controls="flagModal"
                         onclick="window.showFlagModalFromButton?.(this)"
                         class="btn @(ViewBag.UserHasFlagged ? "btn-secondary" : "btn-outline-danger") fw-bold flex-fill py-2"
                         data-report-id="@Model.Id"
@@ -457,5 +490,5 @@
         {
             <text><script>setTimeout(launchConfetti, 500);</script></text>
         }
-    
+
 }
