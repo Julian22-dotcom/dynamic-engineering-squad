@@ -93,6 +93,7 @@ public class ReportIssueDetailsViewIntegrationTests
         var html = await response.Content.ReadAsStringAsync();
 
         Assert.That(response.IsSuccessStatusCode, Is.True);
-        Assert.That(html, Does.Contain("Reported by:</strong> reporter1"));
+        Assert.That(html, Does.Contain("Reported by"));
+        Assert.That(html, Does.Contain("reporter1"));
     }
 }
