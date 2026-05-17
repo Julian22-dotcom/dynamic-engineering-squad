@@ -66,7 +66,6 @@
     }
 
     <div class="report-card">
-        <p><strong>Status:</strong> @Model.Status</p>
         @{
             var severityClass = Model.SeverityStatus switch
             {
@@ -78,61 +77,109 @@
             };
         }
 
-        <p>
-            <strong>Severity:</strong>
-            <span class="badge @severityClass px-3 py-2" data-testid="severity-status">
-                @Model.SeverityStatus
+        <!-- Status + severity badges -->
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
+            <span class="badge bg-primary px-3 py-2 fs-6">Status: @Model.Status</span>
+            <span class="badge @severityClass px-3 py-2 fs-6" data-testid="severity-status">
+                Severity: @Model.SeverityStatus
             </span>
-        </p>
+        </div>
 
-        @if (!string.IsNullOrWhiteSpace(Model.SeverityReason))
-        {
-            <p>
-                <strong>Reason:</strong><br />
-                <span data-testid="severity-reason">@Model.SeverityReason</span>
-            </p>
-        }
-        else
-        {
-            <p class="text-muted">
-                <strong>Reason:</strong> <span data-testid="severity-reason">Not available.</span>
-            </p>
-        }
-        <p><strong>Created:</strong> @Model.CreatedAt</p>
-        <p><strong>Reported by:</strong> @reporterDisplay</p>
-        <p>
-            <strong>Description:</strong><br />
-            <span class="report-text-wrap text-break">@Model.Description</span>
-        </p>
-        <p><strong>Location:</strong> (@Model.Latitude, @Model.Longitude)</p>
+        <!-- Two-column: metadata left, image right -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <dl class="row mb-3">
+                    <dt class="col-sm-4 text-muted fw-normal">Reported</dt>
+                    <dd class="col-sm-8">@Model.CreatedAt.ToString("MMM d, yyyy h:mm tt")</dd>
 
-        <div class="mt-3">
-            <p><strong>Location on map:</strong></p>
+                    <dt class="col-sm-4 text-muted fw-normal">Reported by</dt>
+                    <dd class="col-sm-8">@reporterDisplay</dd>
 
-            <div id="submittedMap"   data-lat="@Model.Latitude"    data-lng="@Model.Longitude"
-                 style="height:320px; width:100%; border-radius:12px;">
+                    <dt class="col-sm-4 text-muted fw-normal">Location</dt>
+                    <dd class="col-sm-8 small">@Model.Latitude, @Model.Longitude</dd>
+                </dl>
+
+                <p class="text-muted small mb-1">Description</p>
+                <p class="report-text-wrap text-break mb-3">@Model.Description</p>
+
+                <p class="text-muted small mb-1">Severity Reason</p>
+                @if (!string.IsNullOrWhiteSpace(Model.SeverityReason))
+                {
+                    <p data-testid="severity-reason" class="mb-0">@Model.SeverityReason</p>
+                }
+                else
+                {
+                    <p class="text-muted mb-0"><span data-testid="severity-reason">Not available.</span></p>
+                }
+            </div>
+
+            <div class="col-md-6">
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         class="img-fluid rounded w-100"
+                         style="max-height:300px; object-fit:cover;"
+                         alt="Uploaded issue photo"
+                         onerror="this.classList.add('d-none'); document.getElementById('detailsImageFallback').classList.remove('d-none');" />
+                    <p id="detailsImageFallback" class="text-muted d-none mt-2">
+                        Image could not be loaded.
+                    </p>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center rounded text-muted"
+                         style="min-height:180px; background:rgba(72,72,72,0.3);">
+                        <div class="text-center">
+                            <i class="fa-solid fa-image fa-2x mb-2 d-block"></i>
+                            <small>No image provided</small>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-        {
-            <p><strong>Image:</strong></p>
-
-            <!-- SCRUM-102 ADDED: hide broken image and show fallback message -->
-            <img src="@Model.ImageUrl" class="img-fluid rounded" alt="Uploaded issue photo"
-                 onerror="this.classList.add('d-none'); document.getElementById('detailsImageFallback').classList.remove('d-none');" />
-
-            <!-- SCRUM-102 ADDED: shown only if the image file cannot be loaded -->
-            <p id="detailsImageFallback" class="text-muted d-none">
-                Image could not be loaded.
-            </p>
-        }
-        else
-        {
-            <!-- SCRUM-102 ADDED: fallback when no image URL exists -->
-            <p class="text-muted">No image was provided for this report.</p>
-        }
+        <!-- Map: full width -->
+        <p class="text-muted small mb-2">Location on map</p>
+        <div id="submittedMap" data-lat="@Model.Latitude" data-lng="@Model.Longitude"
+             style="height:320px; width:100%; border-radius:12px;">
+        </div>
     </div>
+
+    <!-- Status Timeline -->
+    @{
+        var statusHistory = ViewBag.StatusHistory as List<InfrastructureApp.ViewModels.ReportStatusHistoryViewModel>;
+    }
+    @if (statusHistory != null && statusHistory.Count > 0)
+    {
+        <div class="report-card mt-3">
+            <h2 class="h6 text-muted text-uppercase mb-3 mb-0">
+                <i class="fa-solid fa-clock me-1"></i> Status Timeline
+            </h2>
+            <div class="d-flex flex-column gap-3 mt-3">
+                @foreach (var entry in statusHistory)
+                {
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="mt-1 flex-shrink-0">
+                            <i class="fa-solid fa-circle @(entry.IsCurrent ? "text-safety-orange" : "text-muted")"
+                               style="font-size:0.6rem;"></i>
+                        </div>
+                        <div>
+                            <div>
+                                <span class="@(entry.IsCurrent ? "fw-bold" : "")">@entry.Status</span>
+                                @if (entry.IsCurrent)
+                                {
+                                    <span class="badge bg-primary ms-2 px-2 py-1 small">Current</span>
+                                }
+                            </div>
+                            <div class="text-muted small">
+                                @entry.ChangedAt.ToString("MMM d, yyyy h:mm tt") &middot; by @entry.ChangedByDisplayName
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
 
     <!-- Admin actions -->
     @if (User.IsInRole("Admin"))
@@ -255,9 +302,6 @@
             <button type="button"
                     id="flagBtn"
                     data-testid="flag-button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#flagModal"
-                    aria-controls="flagModal"
                     onclick="window.showFlagModalFromButton?.(this)"
                     class="btn @(ViewBag.UserHasFlagged ? "btn-secondary" : "btn-outline-danger") fw-bold flex-fill py-2"
                     data-report-id="@Model.Id"
