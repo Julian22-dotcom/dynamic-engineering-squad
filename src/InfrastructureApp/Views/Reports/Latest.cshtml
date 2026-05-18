@@ -58,6 +58,56 @@ else
             </button>
         }
     </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <!-- SCRUM-157: Pagination controls for the Latest Reports list. -->
+        <nav class="mt-4" aria-label="Latest Reports pagination">
+            <ul class="pagination pagination-sm justify-content-center flex-wrap gap-1">
+                <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <a class="page-link bg-dark text-light border-secondary"
+                       asp-controller="Reports"
+                       asp-action="Latest"
+                       asp-route-page="@(Model.PageIndex - 1)"
+                       asp-route-query="@Model.SearchQuery"
+                       asp-route-sort="@Model.SortOrder"
+                       tabindex="@(!Model.HasPreviousPage ? "-1" : "0")"
+                       aria-disabled="@(!Model.HasPreviousPage)">
+                        Previous
+                    </a>
+                </li>
+
+                @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                {
+                    var isCurrentPage = pageNumber == Model.PageIndex;
+                    <li class="page-item @(isCurrentPage ? "active" : "")">
+                        <a class="page-link @(isCurrentPage ? "bg-primary border-primary text-light" : "bg-dark text-light border-secondary")"
+                           asp-controller="Reports"
+                           asp-action="Latest"
+                           asp-route-page="@pageNumber"
+                           asp-route-query="@Model.SearchQuery"
+                           asp-route-sort="@Model.SortOrder"
+                           aria-current="@(isCurrentPage ? "page" : null)">
+                            @pageNumber
+                        </a>
+                    </li>
+                }
+
+                <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                    <a class="page-link bg-dark text-light border-secondary"
+                       asp-controller="Reports"
+                       asp-action="Latest"
+                       asp-route-page="@(Model.PageIndex + 1)"
+                       asp-route-query="@Model.SearchQuery"
+                       asp-route-sort="@Model.SortOrder"
+                       tabindex="@(!Model.HasNextPage ? "-1" : "0")"
+                       aria-disabled="@(!Model.HasNextPage)">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
 }
 <!-- Report Details Modal -->
 <div class="modal fade" id="reportModal" data-testid="report-modal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
