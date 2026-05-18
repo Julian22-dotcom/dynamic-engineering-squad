@@ -27,8 +27,7 @@ namespace InfrastructureApp_Tests.Features
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Latest Reports Pagination", "  As a user\r\n  I want the Latest Reports page to split reports into smaller pages" +
-                "\r\n  So that I can browse recent reports without one long overwhelming list", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Latest Reports Pagination", null, global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
         
 #line 1 "LatestReportsPagination.feature"
 #line hidden
@@ -110,7 +109,7 @@ namespace InfrastructureApp_Tests.Features
             string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Pagination controls appear when there are more reports than one page", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 6
+#line 7
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -120,16 +119,16 @@ namespace InfrastructureApp_Tests.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 7
+#line 8
     await testRunner.GivenAsync("more than one page of latest reports exists", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 8
+#line 9
     await testRunner.WhenAsync("I visit the Latest Reports page", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 9
+#line 10
     await testRunner.ThenAsync("I should see Latest Reports pagination controls", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 10
+#line 11
     await testRunner.AndAsync("the first page should be marked as the current page", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -143,7 +142,7 @@ namespace InfrastructureApp_Tests.Features
             string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("User can navigate to the next page of Latest Reports", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 12
+#line 13
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -153,19 +152,19 @@ namespace InfrastructureApp_Tests.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 13
+#line 14
     await testRunner.GivenAsync("more than one page of latest reports exists", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 14
+#line 15
     await testRunner.WhenAsync("I visit the Latest Reports page", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 15
+#line 16
     await testRunner.AndAsync("I go to the next Latest Reports page", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 16
+#line 17
     await testRunner.ThenAsync("I should see the second page of Latest Reports", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 17
+#line 18
     await testRunner.AndAsync("the second page should be marked as the current page", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -179,7 +178,7 @@ namespace InfrastructureApp_Tests.Features
             string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Search results preserve pagination", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 19
+#line 20
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -189,16 +188,16 @@ namespace InfrastructureApp_Tests.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 20
+#line 21
     await testRunner.GivenAsync("more than one page of searchable latest reports exists", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 21
+#line 22
     await testRunner.WhenAsync("I search Latest Reports for \"Pothole\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 22
+#line 23
     await testRunner.ThenAsync("I should see Latest Reports pagination controls", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 23
+#line 24
     await testRunner.AndAsync("the pagination links should preserve the search term \"Pothole\"", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -212,7 +211,7 @@ namespace InfrastructureApp_Tests.Features
             string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Sort order works with pagination", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 25
+#line 26
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -222,16 +221,16 @@ namespace InfrastructureApp_Tests.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 26
+#line 27
     await testRunner.GivenAsync("more than one page of latest reports exists", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 27
+#line 28
     await testRunner.WhenAsync("I sort Latest Reports by oldest first", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 28
+#line 29
     await testRunner.ThenAsync("I should see the oldest Latest Reports first", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
-#line 29
+#line 30
     await testRunner.AndAsync("the pagination links should preserve the oldest first sort", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
@@ -245,7 +244,7 @@ namespace InfrastructureApp_Tests.Features
             string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("User can still open a report after navigating pages", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 31
+#line 32
   this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -255,19 +254,19 @@ namespace InfrastructureApp_Tests.Features
             else
             {
                 await this.ScenarioStartAsync();
-#line 32
+#line 33
     await testRunner.GivenAsync("more than one page of latest reports exists", ((string)(null)), ((global::Reqnroll.Table)(null)), "Given ");
 #line hidden
-#line 33
+#line 34
     await testRunner.WhenAsync("I visit the Latest Reports page", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 34
+#line 35
     await testRunner.AndAsync("I go to the next Latest Reports page", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 35
+#line 36
     await testRunner.AndAsync("I open a report from the Latest Reports list", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
-#line 36
+#line 37
     await testRunner.ThenAsync("the Latest Reports modal should open for that report", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
