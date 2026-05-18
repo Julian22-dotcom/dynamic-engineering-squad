@@ -55,7 +55,34 @@ namespace InfrastructureApp_Tests.Reports
             Assert.That(result.HasPreviousPage, Is.False);
         }
 
-       
+        // TEST 2: Second page returns the next set of reports.
+        [Test]
+        public async Task GetPaginatedLatestReportsAsync_SecondPage_ReturnsNextSetOfReports()
+        {
+            // Arrange
+            using var db = NewDb();
+            await AddUserAsync(db, "user-2");
+            await SeedReportsAsync(db, count: 15, userId: "user-2");
+            var repo = new ReportIssueRepositoryEf(db);
+
+            // Act
+            var result = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: null, sort: "newest", pageNumber: 2, pageSize: 10);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(5));
+            Assert.That(result.Select(r => r.Description).ToList(), Is.EqualTo(new[]
+            {
+                "Report 05",
+                "Report 04",
+                "Report 03",
+                "Report 02",
+                "Report 01"
+            }));
+            Assert.That(result.PageIndex, Is.EqualTo(2));
+            Assert.That(result.HasNextPage, Is.False);
+            Assert.That(result.HasPreviousPage, Is.True);
+        }
+
         private ApplicationDbContext NewDb()
         {
             return new ApplicationDbContext(_dbOptions);
