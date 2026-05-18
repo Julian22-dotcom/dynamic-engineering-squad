@@ -17,14 +17,14 @@ namespace InfrastructureApp_Tests.SeleniumTests
         [Test]
         public async Task LatestReports_WhenEnoughReportsExist_ShowsPaginationControls()
         {
-            // Arrange
+            // Arrange: create enough uniquely named reports to force two pages.
             var prefix = BuildUniquePrefix();
             await SeedLatestReports(prefix, count: 12);
 
-            // Act
+            // Act: load Latest Reports filtered to this test data.
             Driver.Navigate().GoToUrl($"{BaseUrl}/Reports/Latest?query={Uri.EscapeDataString(prefix)}");
 
-            // Assert
+            // Assert: the user can see the pagination controls below the list.
             var pagination = WaitForVisible(By.CssSelector("nav[aria-label='Latest Reports pagination']"));
             Assert.That(pagination.Displayed, Is.True);
             Assert.That(pagination.Text, Does.Contain("Previous"));
@@ -35,15 +35,15 @@ namespace InfrastructureApp_Tests.SeleniumTests
         [Test]
         public async Task LatestReports_ClickingNext_ChangesVisibleReportSet()
         {
-            // Arrange
+            // Arrange: seed 12 reports so page 2 contains the two oldest matching reports.
             var prefix = BuildUniquePrefix();
             await SeedLatestReports(prefix, count: 12);
             Driver.Navigate().GoToUrl($"{BaseUrl}/Reports/Latest?query={Uri.EscapeDataString(prefix)}");
 
-            // Act
+            // Act: use the same Next control a user clicks.
             ClickNextPage();
 
-            // Assert
+            // Assert: page 2 shows the next set and no longer shows the newest first-page report.
             Assert.That(Driver.PageSource, Does.Contain($"{prefix} 02"));
             Assert.That(Driver.PageSource, Does.Contain($"{prefix} 01"));
             Assert.That(Driver.PageSource, Does.Not.Contain($"{prefix} 12"));
@@ -53,15 +53,15 @@ namespace InfrastructureApp_Tests.SeleniumTests
         [Test]
         public async Task LatestReports_ClickingNext_MarksSecondPageAsCurrent()
         {
-            // Arrange
+            // Arrange: seed enough reports for page navigation.
             var prefix = BuildUniquePrefix();
             await SeedLatestReports(prefix, count: 12);
             Driver.Navigate().GoToUrl($"{BaseUrl}/Reports/Latest?query={Uri.EscapeDataString(prefix)}");
 
-            // Act
+            // Act: navigate to page 2.
             ClickNextPage();
 
-            // Assert
+            // Assert: the active page indicator moves to page 2.
             var currentPage = WaitForVisible(By.CssSelector("nav[aria-label='Latest Reports pagination'] .page-item.active .page-link[aria-current='page']"));
             Assert.That(currentPage.Text.Trim(), Is.EqualTo("2"));
         }
@@ -70,17 +70,17 @@ namespace InfrastructureApp_Tests.SeleniumTests
         [Test]
         public async Task LatestReports_AfterNavigatingPages_ReportModalStillOpens()
         {
-            // Arrange
+            // Arrange: navigate to page 2 before opening a report.
             var prefix = BuildUniquePrefix();
             await SeedLatestReports(prefix, count: 12);
             Driver.Navigate().GoToUrl($"{BaseUrl}/Reports/Latest?query={Uri.EscapeDataString(prefix)}");
             ClickNextPage();
 
-            // Act
+            // Act: click a report item rendered on the paginated page.
             var reportItem = WaitForClickable(By.CssSelector("[data-testid='latest-report-item']"));
             ScrollAndClick(reportItem);
 
-            // Assert
+            // Assert: the existing modal behavior still works after pagination.
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
             var modal = wait.Until(driver =>
             {
@@ -101,6 +101,7 @@ namespace InfrastructureApp_Tests.SeleniumTests
         {
             using var scope = ServerHost!.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            // Future dates keep this test data newer than shared Selenium seed data.
             var startDate = DateTime.UtcNow.AddDays(30);
             var userId = $"{descriptionPrefix.Replace(" ", "-").ToLowerInvariant()}-user";
 
@@ -119,6 +120,7 @@ namespace InfrastructureApp_Tests.SeleniumTests
 
         private void ClickNextPage()
         {
+            // Click through the rendered pagination control instead of navigating directly.
             var nextLink = WaitForClickable(By.XPath("//nav[@aria-label='Latest Reports pagination']//a[normalize-space()='Next']"));
             ScrollAndClick(nextLink);
 

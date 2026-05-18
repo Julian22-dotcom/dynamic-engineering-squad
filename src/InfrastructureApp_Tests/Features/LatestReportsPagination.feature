@@ -1,4 +1,5 @@
 Feature: Latest Reports Pagination
+  # SCRUM-157: User-facing coverage for paginated Latest Reports browsing.
   As a user
   I want the Latest Reports page to split reports into smaller pages
   So that I can browse recent reports without one long overwhelming list

@@ -17,7 +17,6 @@ namespace InfrastructureApp_Tests.Reports
         [SetUp]
         public void SetUp()
         {
-            // Use SQLite in-memory so repository paging runs through EF query translation.
             _connection = new SqliteConnection("Filename=:memory:");
             _connection.Open();
 
@@ -34,6 +33,8 @@ namespace InfrastructureApp_Tests.Reports
         {
             _connection.Dispose();
         }
+
+
 
         private ApplicationDbContext NewDb()
         {

@@ -24,6 +24,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
         {
             _dbName = "LatestReportsPaginationTest_" + Guid.NewGuid();
 
+            // Each scenario gets an isolated in-memory database with the normal app services.
             _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("Development");
@@ -40,6 +41,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
                         services.Remove(descriptor);
                     }
 
+                    // Replace the app database so seeded reports are scoped to this feature scenario.
                     services.AddDbContext<ApplicationDbContext>(options =>
                     {
                         options.UseInMemoryDatabase(_dbName);
@@ -53,6 +55,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             });
         }
 
+        // GIVEN steps seed enough approved reports to exercise two server-side pages.
         [Given("more than one page of latest reports exists")]
         public async Task GivenMoreThanOnePageOfLatestReportsExists()
         {
@@ -62,6 +65,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             await SeedLatestReportsAsync(db, count: 15, descriptionPrefix: "Latest report");
         }
 
+        // Search scenarios use matching and non-matching descriptions to prove filtering happens first.
         [Given("more than one page of searchable latest reports exists")]
         public async Task GivenMoreThanOnePageOfSearchableLatestReportsExists()
         {
@@ -72,6 +76,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
             await SeedLatestReportsAsync(db, count: 4, descriptionPrefix: "Streetlight");
         }
 
+        // WHEN steps request the same URLs a browser would use from the Latest Reports UI.
         [When("I visit the Latest Reports page")]
         public async Task WhenIVisitTheLatestReportsPage()
         {
@@ -99,14 +104,17 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [When("I open a report from the Latest Reports list")]
         public void WhenIOpenAReportFromTheLatestReportsList()
         {
+            // Server-side BDD checks the markup required for the existing modal JavaScript to open.
             Assert.That(_html, Does.Contain("data-testid=\"latest-report-item\""));
             Assert.That(_html, Does.Contain("data-bs-target=\"#reportModal\""));
         }
 
+        // THEN steps assert the rendered HTML state produced by server-side pagination.
         [Then("I should see Latest Reports pagination controls")]
         public void ThenIShouldSeeLatestReportsPaginationControls()
         {
             Assert.That(_response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            // The nav label and Previous/Next text are the user-visible pagination controls.
             Assert.That(_html, Does.Contain("aria-label=\"Latest Reports pagination\""));
             Assert.That(_html, Does.Contain("Previous"));
             Assert.That(_html, Does.Contain("Next"));
@@ -135,12 +143,14 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Then("the pagination links should preserve the search term {string}")]
         public void ThenThePaginationLinksShouldPreserveTheSearchTerm(string searchTerm)
         {
+            // Pagination links must carry the search term so page 2 stays filtered.
             Assert.That(_html, Does.Contain($"query={searchTerm}"));
         }
 
         [Then("I should see the oldest Latest Reports first")]
         public void ThenIShouldSeeTheOldestLatestReportsFirst()
         {
+            // The first two oldest reports should appear in chronological order on page 1.
             var firstIndex = _html.IndexOf("Latest report 01", StringComparison.Ordinal);
             var secondIndex = _html.IndexOf("Latest report 02", StringComparison.Ordinal);
 
@@ -151,12 +161,14 @@ namespace InfrastructureApp_Tests.StepDefinitions
         [Then("the pagination links should preserve the oldest first sort")]
         public void ThenThePaginationLinksShouldPreserveTheOldestFirstSort()
         {
+            // Pagination links must carry the sort value so page 2 keeps oldest-first order.
             Assert.That(_html, Does.Contain("sort=oldest"));
         }
 
         [Then("the Latest Reports modal should open for that report")]
         public void ThenTheLatestReportsModalShouldOpenForThatReport()
         {
+            // This verifies the modal container/details markup still exists after pagination.
             Assert.That(_html, Does.Contain("id=\"reportModal\""));
             Assert.That(_html, Does.Contain("data-testid=\"report-modal\""));
             Assert.That(_html, Does.Contain("Report Details"));
@@ -188,6 +200,7 @@ namespace InfrastructureApp_Tests.StepDefinitions
 
         private void AssertCurrentPageIs(string pageNumber)
         {
+            // Active page styling and aria-current make the current page obvious to users.
             var pattern = $@"<li[^>]*class=""[^""]*active[^""]*""[^>]*>\s*<a[^>]*aria-current=""page""[^>]*>\s*{pageNumber}\s*</a>";
             Assert.That(Regex.IsMatch(_html, pattern, RegexOptions.Singleline), Is.True);
         }
