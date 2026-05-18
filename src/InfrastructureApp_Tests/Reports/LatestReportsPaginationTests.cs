@@ -83,6 +83,88 @@ namespace InfrastructureApp_Tests.Reports
             Assert.That(result.HasPreviousPage, Is.True);
         }
 
+        // TEST 3: Newest sort stays correct across pages.
+        [Test]
+        public async Task GetPaginatedLatestReportsAsync_NewestSort_OrdersCorrectlyAcrossPages()
+        {
+            // Arrange
+            using var db = NewDb();
+            await AddUserAsync(db, "user-3");
+            await SeedReportsAsync(db, count: 6, userId: "user-3");
+            var repo = new ReportIssueRepositoryEf(db);
+
+            // Act
+            var pageOne = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: null, sort: "newest", pageNumber: 1, pageSize: 3);
+            var pageTwo = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: null, sort: "newest", pageNumber: 2, pageSize: 3);
+
+            // Assert
+            Assert.That(pageOne.Select(r => r.Description).ToList(), Is.EqualTo(new[] { "Report 06", "Report 05", "Report 04" }));
+            Assert.That(pageTwo.Select(r => r.Description).ToList(), Is.EqualTo(new[] { "Report 03", "Report 02", "Report 01" }));
+        }
+
+        // TEST 4: Oldest sort stays correct across pages.
+        [Test]
+        public async Task GetPaginatedLatestReportsAsync_OldestSort_OrdersCorrectlyAcrossPages()
+        {
+            // Arrange
+            using var db = NewDb();
+            await AddUserAsync(db, "user-4");
+            await SeedReportsAsync(db, count: 6, userId: "user-4");
+            var repo = new ReportIssueRepositoryEf(db);
+
+            // Act
+            var pageOne = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: null, sort: "oldest", pageNumber: 1, pageSize: 3);
+            var pageTwo = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: null, sort: "oldest", pageNumber: 2, pageSize: 3);
+
+            // Assert
+            Assert.That(pageOne.Select(r => r.Description).ToList(), Is.EqualTo(new[] { "Report 01", "Report 02", "Report 03" }));
+            Assert.That(pageTwo.Select(r => r.Description).ToList(), Is.EqualTo(new[] { "Report 04", "Report 05", "Report 06" }));
+        }
+
+        // TEST 5: Search filters before pagination.
+        [Test]
+        public async Task GetPaginatedLatestReportsAsync_SearchFilter_AppliesBeforePagination()
+        {
+            // Arrange
+            using var db = NewDb();
+            await AddUserAsync(db, "user-5");
+            await SeedReportsAsync(db, count: 12, userId: "user-5", descriptionPrefix: "Pothole");
+            await SeedReportsAsync(db, count: 5, userId: "user-5", descriptionPrefix: "Streetlight");
+            var repo = new ReportIssueRepositoryEf(db);
+
+            // Act
+            var pageOne = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: "Pothole", sort: "newest", pageNumber: 1, pageSize: 10);
+            var pageTwo = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: "Pothole", sort: "newest", pageNumber: 2, pageSize: 10);
+
+            // Assert
+            Assert.That(pageOne.Count, Is.EqualTo(10));
+            Assert.That(pageTwo.Count, Is.EqualTo(2));
+            Assert.That(pageOne.TotalPages, Is.EqualTo(2));
+            Assert.That(pageOne.All(r => r.Description.Contains("Pothole")), Is.True);
+            Assert.That(pageTwo.All(r => r.Description.Contains("Pothole")), Is.True);
+        }
+
+        // TEST 6: Non-admin users only see approved reports.
+        [Test]
+        public async Task GetPaginatedLatestReportsAsync_WhenNotAdmin_ReturnsOnlyApprovedReports()
+        {
+            // Arrange
+            using var db = NewDb();
+            await AddUserAsync(db, "user-6");
+            await SeedReportsAsync(db, count: 2, userId: "user-6", descriptionPrefix: "Approved", status: "Approved");
+            await SeedReportsAsync(db, count: 2, userId: "user-6", descriptionPrefix: "Pending", status: "Pending");
+            await SeedReportsAsync(db, count: 1, userId: "user-6", descriptionPrefix: "Rejected", status: "Rejected");
+            var repo = new ReportIssueRepositoryEf(db);
+
+            // Act
+            var result = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: null, sort: "newest", pageNumber: 1, pageSize: 10);
+
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result.All(r => r.Status == "Approved"), Is.True);
+            Assert.That(result.Select(r => r.Description).ToList(), Is.EqualTo(new[] { "Approved 02", "Approved 01" }));
+        }
+
         private ApplicationDbContext NewDb()
         {
             return new ApplicationDbContext(_dbOptions);
