@@ -34,8 +34,28 @@ namespace InfrastructureApp_Tests.Reports
             _connection.Dispose();
         }
 
+        // TEST 1: First page returns only the configured page size.
+        [Test]
+        public async Task GetPaginatedLatestReportsAsync_FirstPage_ReturnsOnlyPageSizeCount()
+        {
+            // Arrange
+            using var db = NewDb();
+            await AddUserAsync(db, "user-1");
+            await SeedReportsAsync(db, count: 15, userId: "user-1");
+            var repo = new ReportIssueRepositoryEf(db);
 
+            // Act
+            var result = await repo.GetPaginatedLatestReportsAsync(isAdmin: false, keyword: null, sort: "newest", pageNumber: 1, pageSize: 10);
 
+            // Assert
+            Assert.That(result.Count, Is.EqualTo(10));
+            Assert.That(result.PageIndex, Is.EqualTo(1));
+            Assert.That(result.TotalPages, Is.EqualTo(2));
+            Assert.That(result.HasNextPage, Is.True);
+            Assert.That(result.HasPreviousPage, Is.False);
+        }
+
+       
         private ApplicationDbContext NewDb()
         {
             return new ApplicationDbContext(_dbOptions);
