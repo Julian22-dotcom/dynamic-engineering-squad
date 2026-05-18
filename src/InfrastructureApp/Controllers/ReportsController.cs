@@ -18,17 +18,36 @@ namespace InfrastructureApp.Controllers
 
         // GET: /Reports/Latest
         [HttpGet]
-        public async Task<IActionResult> Latest()
+        // SCRUM-157: Accept query-string values for pagination, search, and sorting.
+        public async Task<IActionResult> Latest(int page = 1, string? query = null, string? sort = null)
         {
             bool isAdmin = User.IsInRole("Admin");
+            // SCRUM-157: Keep each Latest Reports page short and readable.
+            const int pageSize = 10;
 
-            // Repository handles filtering and sorting
-            var reports = await _repo.GetLatestReportsAsync(isAdmin);
+            // SCRUM-157: Normalize paging input before asking the repository for one page.
+            var pageNumber = page < 1 ? 1 : page;
+            
+            // SCRUM-157: Only allow the supported sort values from the UI/query string.
+            var sortOrder = string.Equals(sort, "oldest", StringComparison.OrdinalIgnoreCase) ? "oldest" : "newest";
 
-            // Pass data directly to ViewModel (no copying)
+            // Repository handles filtering, sorting, and pagination
+            var reports = await _repo.GetPaginatedLatestReportsAsync(isAdmin, query, sortOrder, pageNumber, pageSize);
+
+            // Pass data directly to ViewModel
             var vm = new LatestReportsViewModel
             {
-                Reports = reports
+                // SCRUM-157: Convert the selected page back to the existing list shape used by the view.
+                Reports = reports.ToList(),
+                // SCRUM-157: Copy pagination state so the view can render controls later.
+                PageIndex = reports.PageIndex,
+                TotalPages = reports.TotalPages,
+                HasPreviousPage = reports.HasPreviousPage,
+                HasNextPage = reports.HasNextPage,
+                // SCRUM-157: Preserve current search/sort/page-size state for the view.
+                SearchQuery = query,
+                SortOrder = sortOrder,
+                PageSize = pageSize
             };
 
             return View(vm);
