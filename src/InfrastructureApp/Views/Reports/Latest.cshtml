@@ -13,6 +13,7 @@
 
 <!-- SCRUM-157: Search and sort use the same server-side pagination flow. -->
 <form asp-controller="Reports" asp-action="Latest" method="get" class="mb-3">
+    @* SCRUM-157: New searches/sorts start at page 1 so filtered results are not stranded on a later page. *@
     <input type="hidden" name="page" value="1" />
     <div class="d-flex flex-wrap gap-2 align-items-center">
         <input id="latestSearchInput"

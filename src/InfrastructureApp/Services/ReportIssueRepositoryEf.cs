@@ -88,6 +88,7 @@ namespace InfrastructureApp.Services
         {
             var query = _db.ReportIssue.AsQueryable();
 
+            // Keep the same Latest Reports rules, then page the final ordered result.
             query = ReportIssue.VisibleToUser(query, isAdmin);
             query = ReportIssue.FilterByDescription(query, keyword);
             query = ReportIssue.ApplyDateSort(query, sort);

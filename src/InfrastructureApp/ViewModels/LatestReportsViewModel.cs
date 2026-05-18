@@ -17,6 +17,7 @@ namespace InfrastructureApp.ViewModels
 
         public bool HasNextPage { get; set; }
 
+        // These preserve the current filter/sort in pagination links.
         public string? SearchQuery { get; set; }
 
         public string SortOrder { get; set; } = "newest";
