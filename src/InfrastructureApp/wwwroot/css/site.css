@@ -416,6 +416,42 @@ h1, h2, h3 {
     max-width: 100%;
 }
 
+/* SCRUM-144: Keep Latest Reports rows readable when descriptions are long. */
+.latest-report-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    gap: 1rem;
+    align-items: start;
+    padding-block: 0.9rem;
+}
+
+.latest-report-row__content {
+    min-width: 0;
+}
+
+.latest-report-row__description {
+    line-height: 1.4;
+}
+
+.latest-report-row__date {
+    justify-self: end;
+    font-size: 0.85rem;
+    padding-top: 0.1rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .latest-report-row {
+        grid-template-columns: 1fr;
+        gap: 0.45rem;
+    }
+
+    .latest-report-row__date {
+        justify-self: start;
+        white-space: normal;
+    }
+}
+
 .report-create-page {
     position: relative;
 }
