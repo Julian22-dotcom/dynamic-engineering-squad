@@ -23,6 +23,19 @@ namespace InfrastructureApp.ViewModels
         public string SortOrder { get; set; } = "newest";
 
         public int PageSize { get; set; } = 10;
+
+        // SCRUM-159: Builds a short row preview while leaving the full modal description unchanged.
+        public string GetDescriptionPreview(string? description)
+        {
+            const int previewLength = 100;
+
+            if (string.IsNullOrWhiteSpace(description) || description.Length <= previewLength)
+            {
+                return description ?? string.Empty;
+            }
+
+            return description[..previewLength].TrimEnd() + "...";
+        }
     }
 }
 
