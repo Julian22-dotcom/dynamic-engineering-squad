@@ -58,7 +58,8 @@ else
 
                 @* SCRUM-144: Separate description and date areas so long text can be styled without breaking modal behavior. *@
                 <div class="me-3 latest-report-row__content">
-                    <div class="fw-bold report-text-wrap text-break latest-report-row__description">@r.Description</div>
+                    @* SCRUM-159: Show a shorter row preview while data-description keeps the full modal text. *@
+                    <div class="fw-bold report-text-wrap text-break latest-report-row__description">@Model.GetDescriptionPreview(r.Description)</div>
                 </div>
 
                 <small class="text-muted latest-report-row__date">
