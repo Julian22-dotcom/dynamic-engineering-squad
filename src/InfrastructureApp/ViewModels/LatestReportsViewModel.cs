@@ -8,7 +8,7 @@ namespace InfrastructureApp.ViewModels
         // Directly use the domain model for display
         public List<ReportIssue> Reports { get; set; } = new();
 
-        // SCRUM-157: Pagination state for the Latest Reports page.
+        // Pagination state for the Latest Reports page. (SCRUM-157)
         public int PageIndex { get; set; } = 1;
 
         public int TotalPages { get; set; }
@@ -24,7 +24,7 @@ namespace InfrastructureApp.ViewModels
 
         public int PageSize { get; set; } = 10;
 
-        // SCRUM-159: Builds a short row preview while leaving the full modal description unchanged.
+        // Builds a short row preview while leaving the full modal description unchanged. (SCRUM-159)
         public string GetDescriptionPreview(string? description)
         {
             const int previewLength = 100;
