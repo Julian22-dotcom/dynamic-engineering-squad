@@ -27,7 +27,7 @@ namespace InfrastructureApp.ViewModels
         // Builds a short row preview while leaving the full modal description unchanged. (SCRUM-159)
         public string GetDescriptionPreview(string? description)
         {
-            const int previewLength = 160;
+            const int previewLength = 140;
 
             if (string.IsNullOrWhiteSpace(description) || description.Length <= previewLength)
             {
